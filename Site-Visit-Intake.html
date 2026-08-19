@@ -1,0 +1,2283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Site Visit Intake">
+<title>Site Visit Intake — Project Information Template</title>
+<style>
+  :root{
+    --navy:#1F3864;
+    --navy-deep:#152A4D;
+    --steel:#3D6B94;
+    --rust:#A85A2A;
+    --rust-deep:#8C4A20;
+    --olive:#4C7A3D;
+    --paper:#F6F3EC;
+    --card:#FFFFFF;
+    --line:#E2DDCF;
+    --ink:#26241F;
+    --ink-soft:#665F52;
+    font-size:16px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;overscroll-behavior:none;}
+  h1,h2,h3,.serif{font-family:Georgia,"Iowan Old Style","Times New Roman",serif;}
+
+  /* ---------- Top bar ---------- */
+  .topbar{position:sticky;top:0;z-index:30;background:var(--navy);
+    background-image:linear-gradient(180deg,var(--navy),var(--navy-deep));
+    color:#fff;padding:14px 16px 12px;box-shadow:0 2px 10px rgba(0,0,0,.18);}
+  .topbar-inner{max-width:860px;margin:0 auto;}
+  .brand{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+  .brand h1{font-size:1.28rem;margin:0;font-weight:700;letter-spacing:.2px;}
+  .brand .tag{font-size:.72rem;color:#C9D6E8;letter-spacing:.14em;text-transform:uppercase;font-family:inherit;}
+  .meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:12px;}
+  @media (max-width:520px){.meta-grid{grid-template-columns:1fr 1fr;}}
+  .meta-field{min-width:0;}
+  .meta-field-date{grid-column:1 / -1;max-width:220px;}
+  .meta-field label{display:block;font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;
+    color:#B9C7DC;margin-bottom:3px;}
+  .meta-field input{width:100%;padding:8px 9px;border-radius:6px;border:1px solid rgba(255,255,255,.25);
+    background:rgba(255,255,255,.08);color:#fff;font-size:16px;}
+  .meta-field input::placeholder{color:#8FA1BC;}
+  .meta-field input:focus{outline:2px solid #fff;background:rgba(255,255,255,.14);}
+
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center;}
+  .btn{appearance:none;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);
+    color:#fff;padding:9px 14px;border-radius:7px;font-size:.86rem;font-weight:600;cursor:pointer;}
+  .btn:active{background:rgba(255,255,255,.22);}
+  .btn.primary{background:var(--rust);border-color:var(--rust);}
+  .btn.primary:active{background:var(--rust-deep);}
+  .status{font-size:.76rem;color:#C9D6E8;margin-left:auto;display:flex;align-items:center;gap:6px;}
+  .status .dot{width:7px;height:7px;border-radius:50%;background:#8FA1BC;}
+  .status.saved .dot{background:#7CC38A;}
+  .status.pending .dot{background:#E8B85A;}
+  .progress-line{font-size:.72rem;color:#C9D6E8;margin-top:6px;}
+
+  /* ---------- Layout ---------- */
+  main{max-width:860px;margin:0 auto;padding:18px 14px 90px;}
+  .intro-note{background:#FBF7EE;border:1px solid var(--line);border-left:4px solid var(--rust);
+    padding:12px 14px;border-radius:6px;font-size:.87rem;color:var(--ink-soft);margin-bottom:18px;line-height:1.45;}
+  .intro-note strong{color:var(--ink);}
+
+  details.section{background:var(--card);border:1px solid var(--line);border-radius:10px;
+    margin-bottom:12px;overflow:hidden;}
+  details.section[open]{border-color:#CDBFA0;}
+  summary{list-style:none;cursor:pointer;padding:14px 14px;display:flex;align-items:center;gap:12px;}
+  summary::-webkit-details-marker{display:none;}
+  .num-tab{flex:0 0 auto;width:34px;height:34px;border-radius:8px;background:var(--paper);
+    border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+    font-family:Georgia,serif;font-weight:700;color:var(--navy);font-size:.95rem;}
+  summary.complete .num-tab{background:var(--olive);border-color:var(--olive);color:#fff;}
+  .sec-title{flex:1;}
+  .sec-title h2{margin:0;font-size:1.02rem;color:var(--navy);}
+  .sec-sub{font-size:.74rem;color:var(--ink-soft);margin-top:1px;}
+  .badge{flex:0 0 auto;font-size:.72rem;color:var(--ink-soft);background:var(--paper);
+    border:1px solid var(--line);padding:3px 9px;border-radius:20px;}
+  .chevron{flex:0 0 auto;width:18px;height:18px;transition:transform .18s ease;color:var(--ink-soft);}
+  details[open] .chevron{transform:rotate(90deg);}
+
+  .sec-body{padding:2px 16px 18px;border-top:1px solid var(--line);}
+  .field{margin-top:14px;}
+  .field label{display:block;font-size:.82rem;font-weight:600;color:var(--ink);margin-bottom:5px;}
+  .field .hint{font-size:.74rem;color:var(--ink-soft);font-weight:400;display:block;margin-top:1px;}
+  textarea,input[type=text],input[type=date],select{
+    width:100%;font-size:16px;padding:10px 11px;border:1px solid #D9D3C2;border-radius:7px;
+    background:#FEFDFB;color:var(--ink);font-family:inherit;}
+  textarea{min-height:64px;resize:vertical;line-height:1.4;}
+  textarea:focus,input:focus,select:focus{outline:none;border-color:var(--steel);
+    box-shadow:0 0 0 3px rgba(61,107,148,.15);}
+
+  .gps-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:9px;}
+  .btn-gps{appearance:none;border:1px solid var(--steel);background:#EAF1F7;color:var(--navy);
+    padding:8px 13px;border-radius:20px;font-size:.82rem;font-weight:600;cursor:pointer;}
+  .btn-gps:active{background:#D9E6F1;}
+  #gps-status{font-size:.76rem;color:var(--ink-soft);}
+  #gps-link-display{margin-top:6px;font-size:.82rem;}
+  #gps-link-display a{color:var(--rust-deep);font-weight:600;text-decoration:none;}
+  #gps-link-display a:active{text-decoration:underline;}
+
+  .photo-gallery{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+
+  .extra-photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+    gap:12px;margin-bottom:14px;}
+  .extra-photo-card{border:1px solid var(--line);border-radius:9px;overflow:hidden;
+    background:#FEFDFB;display:flex;flex-direction:column;}
+  .extra-photo-card img{width:100%;height:130px;object-fit:cover;display:block;background:var(--paper);}
+  .extra-photo-card textarea{width:100%;border:none;border-top:1px solid var(--line);
+    padding:8px;font-size:13px;resize:vertical;min-height:50px;font-family:inherit;
+    background:transparent;flex:1;}
+  .extra-photo-card textarea:focus{outline:none;background:#fff;}
+  .extra-photo-card .extra-photo-footer{display:flex;justify-content:flex-end;
+    padding:2px 6px 4px;border-top:1px solid var(--line);}
+  .extra-photo-card .extra-photo-footer button{background:none;border:none;color:#B5573A;
+    font-size:.76rem;cursor:pointer;padding:4px;}
+  .photo-thumb{position:relative;width:78px;height:78px;border-radius:8px;overflow:hidden;
+    border:1px solid var(--line);flex:0 0 auto;}
+  .photo-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .photo-thumb button{position:absolute;top:2px;right:2px;background:rgba(20,18,14,.6);color:#fff;
+    border:none;border-radius:50%;width:20px;height:20px;font-size:.85rem;line-height:1;cursor:pointer;}
+
+  .tick-detail-list{display:flex;flex-direction:column;gap:6px;margin-top:8px;}
+  .tick-detail-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    padding:8px 10px;border:1px solid #E4DFD1;border-radius:8px;background:#FEFDFB;}
+  .tick-detail-row label.chk{display:flex;align-items:center;gap:8px;font-size:.86rem;
+    flex:1 1 170px;min-width:150px;}
+  .tick-detail-row label.chk input{width:18px;height:18px;flex:0 0 auto;}
+  .tick-detail-row input.detail-input{flex:2 1 200px;min-width:150px;font-size:14px;
+    padding:7px 9px;border:1px solid #E4DFD1;border-radius:6px;background:#fff;}
+  .fuel-row{margin-top:10px;}
+  .fuel-row:first-child{margin-top:0;}
+  .fuel-label{display:block;font-size:.78rem;font-weight:700;color:var(--ink);margin-bottom:5px;}
+
+  .subhead{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--rust-deep);
+    font-weight:700;margin:20px 0 2px;padding-top:14px;border-top:1px dashed var(--line);}
+  .subhead:first-of-type{border-top:none;padding-top:0;margin-top:14px;}
+
+  .sketch-toolbar{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-bottom:12px;}
+  .sketch-group{display:flex;gap:6px;align-items:center;}
+  .sw{width:28px;height:28px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0;}
+  .sw.active{border-color:var(--navy);box-shadow:0 0 0 2px #fff inset;}
+  .sk-btn{border:1px solid #D9D3C2;background:#FEFDFB;border-radius:7px;padding:7px 12px;
+    font-size:.8rem;font-weight:600;color:var(--ink);cursor:pointer;}
+  .sk-btn.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .sketch-canvas{width:100%;display:block;touch-action:none;border:1px solid var(--line);border-radius:8px;
+    background-color:#FEFDFB;
+    background-image:linear-gradient(to right,#E4DFCB 1px,transparent 1px),
+      linear-gradient(to bottom,#E4DFCB 1px,transparent 1px);
+    background-size:24px 24px;}
+
+  .field-desc{font-size:.82rem;color:var(--ink-soft);margin:2px 0 12px;line-height:1.45;}
+
+  .check-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+  .chip{display:flex;align-items:center;gap:6px;border:1px solid #D9D3C2;background:#FEFDFB;
+    padding:8px 12px;border-radius:20px;font-size:.84rem;cursor:pointer;}
+  .chip input{width:15px;height:15px;margin:0;}
+  .chip:has(input:checked){background:#EEF3E9;border-color:var(--olive);color:#2E4A26;font-weight:600;}
+
+  /* ---------- Tables / dynamic rows ---------- */
+  .row-photo-wrap{position:relative;width:42px;height:42px;}
+  .row-photo-thumb{width:42px;height:42px;object-fit:cover;border-radius:6px;cursor:pointer;
+    display:block;border:1px solid var(--line);}
+  .row-photo-del{position:absolute;top:-6px;right:-6px;background:rgba(20,18,14,.65);color:#fff;
+    border:none;border-radius:50%;width:17px;height:17px;font-size:.7rem;line-height:1;cursor:pointer;}
+  .row-photo-btn{background:var(--paper);border:1px dashed #C9C1AC;border-radius:6px;
+    padding:7px 9px;font-size:.72rem;color:var(--navy);cursor:pointer;white-space:nowrap;}
+
+  .table-wrap{overflow-x:auto;margin-top:10px;border:1px solid var(--line);border-radius:8px;}
+  table.dyn{border-collapse:collapse;width:100%;min-width:640px;}
+  table.dyn th{background:var(--paper);text-align:left;font-size:.72rem;text-transform:uppercase;
+    letter-spacing:.05em;color:var(--ink-soft);padding:8px 8px;border-bottom:1px solid var(--line);}
+  table.dyn td{padding:6px;border-bottom:1px solid var(--line);vertical-align:top;}
+  table.dyn input,table.dyn select{border:1px solid #E4DFD1;border-radius:5px;padding:7px 8px;font-size:14px;width:100%;background:#fff;}
+  .row-del{background:none;border:none;color:#B5573A;font-size:1.1rem;cursor:pointer;padding:6px;}
+  .add-row{margin-top:10px;background:var(--paper);border:1px dashed #C9C1AC;color:var(--navy);
+    padding:9px 13px;border-radius:7px;font-size:.84rem;font-weight:600;cursor:pointer;}
+
+  .rfi-item{display:flex;gap:8px;align-items:flex-start;margin-top:8px;}
+  .rfi-item input[type=checkbox]{width:19px;height:19px;margin-top:9px;flex:0 0 auto;}
+  .rfi-item input[type=text]{flex:1;}
+  .rfi-item.resolved input[type=text]{text-decoration:line-through;color:#9C9484;}
+
+  footer.note{max-width:860px;margin:22px auto 0;padding:0 14px;font-size:.74rem;color:var(--ink-soft);
+    line-height:1.5;}
+
+  /* ---------- Modal ---------- */
+  .overlay{position:fixed;inset:0;background:rgba(20,18,14,.5);display:flex;align-items:flex-end;
+    justify-content:center;z-index:50;}
+  .overlay.hidden{display:none;}
+  .modal{background:#fff;border-radius:14px 14px 0 0;width:100%;max-width:520px;max-height:78vh;
+    overflow-y:auto;padding:18px 18px 24px;}
+  @media (min-width:600px){.overlay{align-items:center;}.modal{border-radius:14px;}}
+  .modal h3{margin:0 0 4px;color:var(--navy);font-size:1.1rem;}
+  .modal .sub{font-size:.8rem;color:var(--ink-soft);margin-bottom:14px;}
+  .visit-row{display:flex;justify-content:space-between;align-items:center;gap:8px;
+    border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:8px;}
+  .visit-row .info b{display:block;font-size:.9rem;color:var(--ink);}
+  .visit-row .info span{font-size:.74rem;color:var(--ink-soft);}
+  .visit-row .actions{display:flex;gap:6px;}
+  .visit-row .actions button{border:none;background:var(--paper);border-radius:6px;padding:7px 11px;
+    font-size:.78rem;cursor:pointer;}
+  .visit-row .actions .load-btn{background:var(--navy);color:#fff;font-weight:600;}
+  .visit-row .actions .del-btn{color:#B5573A;}
+  .modal .close-modal{margin-top:12px;width:100%;padding:11px;border:1px solid var(--line);
+    background:#fff;border-radius:8px;font-size:.9rem;cursor:pointer;}
+  .empty-state{font-size:.85rem;color:var(--ink-soft);padding:14px 0;text-align:center;}
+
+  /* Summary modal */
+  #summaryText{white-space:pre-wrap;font-family:ui-monospace,Menlo,monospace;font-size:.78rem;
+    background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:12px;
+    max-height:44vh;overflow-y:auto;line-height:1.5;}
+  /* ---------------- Print modes (Export PDF / SOW Draft) ---------------- */
+  .print-header{display:none;}
+  #sow-draft-output{display:none;}
+
+  @media print{
+    .overlay{display:none !important;}
+
+    /* --- Export PDF: print the filled-in intake form as-is --- */
+    body.print-visit-mode .topbar{display:none !important;}
+    body.print-visit-mode footer.note{display:none !important;}
+    body.print-visit-mode .print-header{display:block !important;
+      border-bottom:2px solid #1F3864;padding-bottom:10px;margin-bottom:14px;}
+    body.print-visit-mode .print-header h1{font-family:Georgia,serif;color:#1F3864;
+      font-size:20px;margin:0 0 4px;}
+    body.print-visit-mode .print-header .ph-meta{font-size:11px;color:#665F52;}
+    body.print-visit-mode details.section{border:none;margin-bottom:10px;
+      page-break-inside:avoid;}
+    body.print-visit-mode details.section > summary{border-bottom:1px solid #1F3864;
+      padding-bottom:4px;}
+    body.print-visit-mode details.section .chevron{display:none;}
+    body.print-visit-mode details.section > *:not(summary){display:block !important;}
+    body.print-visit-mode .add-row,
+    body.print-visit-mode input[type="file"],
+    body.print-visit-mode .row-del,
+    body.print-visit-mode .row-photo-del,
+    body.print-visit-mode .row-photo-btn,
+    body.print-visit-mode .photo-thumb button,
+    body.print-visit-mode .gps-row .btn-gps,
+    body.print-visit-mode .sketch-toolbar,
+    body.print-visit-mode #btn-add-extra-photo,
+    body.print-visit-mode .extra-photo-footer{display:none !important;}
+    body.print-visit-mode textarea{border:none;padding:2px 0;}
+    body.print-visit-mode input,
+    body.print-visit-mode select{border:none;border-bottom:1px solid #D9D3C2;
+      background:transparent;}
+
+    /* --- SOW Draft: hide everything except the generated draft --- */
+    body.print-sow-mode > *{display:none !important;}
+    body.print-sow-mode #sow-draft-output{display:block !important;
+      font-family:Georgia,"Times New Roman",serif;color:#26241F;font-size:12px;
+      line-height:1.5;max-width:100%;}
+    #sow-draft-output h1{font-size:22px;color:#1F3864;margin:0 0 4px;}
+    #sow-draft-output .sow-sub{font-size:12px;color:#665F52;margin-bottom:16px;}
+    #sow-draft-output h2{font-size:14px;color:#1F3864;border-bottom:1px solid #1F3864;
+      padding-bottom:3px;margin:18px 0 8px;page-break-after:avoid;}
+    #sow-draft-output ul{margin:4px 0 10px;padding-left:20px;}
+    #sow-draft-output li{margin-bottom:3px;}
+    #sow-draft-output p{margin:4px 0 8px;}
+    #sow-draft-output table{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:11px;}
+    #sow-draft-output th{background:#1F3864;color:#fff;padding:4px 6px;text-align:left;}
+    #sow-draft-output td{border:1px solid #D9D3C2;padding:4px 6px;}
+    #sow-draft-output .sow-empty{color:#9C9484;font-style:italic;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <h1>Site Visit Intake</h1>
+      <span class="tag">Project Information Templates &middot; Sales Stage</span>
+    </div>
+
+    <div class="meta-grid">
+      <div class="meta-field">
+        <label for="m-project">Project / Site Name</label>
+        <input id="m-project" data-field="meta.projectName" type="text" placeholder="e.g. Rangers Valley – Load Out">
+      </div>
+      <div class="meta-field">
+        <label for="m-projnum">Project Number</label>
+        <input id="m-projnum" data-field="meta.projectNumber" type="text" placeholder="If Known">
+      </div>
+      <div class="meta-field">
+        <label for="m-client">Client</label>
+        <input id="m-client" data-field="meta.client" type="text" placeholder="Client name">
+      </div>
+      <div class="meta-field">
+        <label for="m-by">Visited By</label>
+        <input id="m-by" data-field="meta.preparedBy" type="text" placeholder="Your name">
+      </div>
+      <div class="meta-field meta-field-date">
+        <label for="m-date">Visit Date</label>
+        <input id="m-date" data-field="meta.visitDate" type="date">
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn primary" id="btn-save">Save</button>
+      <button class="btn" id="btn-load">Load Visit</button>
+      <button class="btn" id="btn-summary">Copy Summary</button>
+      <button class="btn" id="btn-export-pdf">Export PDF</button>
+      <button class="btn" id="btn-sow-draft">SOW Draft</button>
+      <button class="btn" id="btn-new">New</button>
+      <div class="status" id="status"><span class="dot"></span><span id="status-text">Not saved yet</span></div>
+    </div>
+    <div class="progress-line" id="progress-line">0 fields captured</div>
+  </div>
+</div>
+
+<main id="form-root">
+
+  <div class="print-header" id="print-header">
+    <h1 id="ph-project">Site Visit Intake</h1>
+    <div class="ph-meta" id="ph-meta"></div>
+  </div>
+
+  <div class="intro-note">
+    <strong>How this works:</strong> Use this during the site visit / sales call to capture what you see and
+    what the client tells you. It mirrors the sections of the standard Scope of Work, so anything noted here
+    drops straight into the SOW when it's written up. Leave anything blank you don't have yet — details for
+    each area can be added later.
+  </div>
+
+  <!-- 1. BACKGROUND -->
+  <details class="section" data-section="background" open>
+    <summary><span class="num-tab">1</span>
+      <div class="sec-title"><h2>Background</h2><div class="sec-sub">Client &amp; history</div></div>
+      <span class="badge">0 noted</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </summary>
+    <div class="sec-body">
+      <div class="field">
+        <label>1.01 Client Background Overview</label>
+        <textarea data-field="background.clientBackground" placeholder="Who's the client, how did the job come about, any relationship history..."></textarea>
+      </div>
+      <div class="field">
+        <label>1.02 Previous Job Overview</label>
+        <textarea data-field="background.previousJob" placeholder="Any prior jobs completed for this client or on this site..."></textarea>
+      </div>
+      <div class="field">
+        <label>1.03 Site Detail</label>
+        <textarea data-field="background.siteDetail" placeholder="Cattle numbers, SCU/m2, herd type, current stocking rate, throughput, etc..."></textarea>
+      </div>
+    </div>
+  </details>
+
+  <!-- 2. INTRODUCTION -->
+  <details class="section" data-section="introduction">
+    <summary><span class="num-tab">2</span>
+      <div class="sec-title"><h2>Introduction</h2><div class="sec-sub">Project overview &amp; location</div></div>
+      <span class="badge">0 noted</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </summary>
+    <div class="sec-body">
+      <div class="field">
+        <label>2.01 Project Type</label>
+        <select data-field="intro.projectType">
+          <option value="">Select...</option>
+          <option>Cattle Handling Facility</option>
+          <option>Feedlot Expansion</option>
+          <option>Feedlot Refurbishment</option>
+          <option>Product Supply</option>
+          <option>Design &amp; Construct Project</option>
+          <option>Load Out Facility</option>
+          <option>Day Works Contract</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>If Other, specify</label>
+        <input type="text" data-field="intro.projectTypeOther" placeholder="Describe project type">
+      </div>
+      <div class="field">
+        <label>2.02 Location Details</label>
+        <input type="text" data-field="intro.location" placeholder="Address / property / paddock name">
+        <div class="gps-row">
+          <button type="button" class="btn-gps" id="btn-gps">&#128205; Record GPS Position</button>
+          <span id="gps-status"></span>
+        </div>
+        <div id="gps-link-display"></div>
+        <input type="hidden" id="gps-link-field" data-field="intro.gpsMapsLink" data-label="GPS Position (Google Maps link)">
+      </div>
+      <div class="field">
+        <label>Site Type</label>
+        <div class="check-grid">
+          <label class="chip"><input type="checkbox" data-field="intro.siteType" value="GreenField"> GreenField</label>
+          <label class="chip"><input type="checkbox" data-field="intro.siteType" value="Refurbishment"> Refurbishment</label>
+          <label class="chip"><input type="checkbox" data-field="intro.siteType" value="Existing Infrastructure"> Existing Infrastructure</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>IT</label>
+        <div class="check-grid">
+          <label class="chip"><input type="checkbox" data-field="intro.it" value="Cellular Service"> Cellular Service</label>
+          <label class="chip"><input type="checkbox" data-field="intro.it" value="Internet"> Internet</label>
+          <label class="chip"><input type="checkbox" data-field="intro.it" value="Starlink Required"> Starlink Required</label>
+          <label class="chip"><input type="checkbox" data-field="intro.it" value="Previous Survey"> Previous Survey</label>
+          <label class="chip"><input type="checkbox" data-field="intro.it" value="GNSS Control"> GNSS Control</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Roads</label>
+        <div class="check-grid">
+          <label class="chip"><input type="checkbox" data-field="intro.roads" value="Sealed"> Sealed</label>
+          <label class="chip"><input type="checkbox" data-field="intro.roads" value="Dirt"> Dirt</label>
+          <label class="chip"><input type="checkbox" data-field="intro.roads" value="4WD Only"> 4WD Only</label>
+          <label class="chip"><input type="checkbox" data-field="intro.roads" value="Hazard under Wet"> Hazard under Wet</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Machinery Access</label>
+        <div class="check-grid">
+          <label class="chip"><input type="checkbox" data-field="intro.machineryAccess" value="Body Truck"> Body Truck</label>
+          <label class="chip"><input type="checkbox" data-field="intro.machineryAccess" value="B Double"> B Double</label>
+          <label class="chip"><input type="checkbox" data-field="intro.machineryAccess" value="Road Train"> Road Train</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>2.03 Site &amp; Access Notes<span class="hint">Layout, terrain, access for trucks/machinery</span></label>
+        <textarea data-field="intro.siteAccessNotes" placeholder="Site conditions, access route, obstacles, ground conditions..."></textarea>
+        <div id="photo-gallery" class="photo-gallery"></div>
+        <input type="file" id="photo-input" accept="image/*" multiple style="display:none">
+        <button type="button" class="add-row" id="btn-add-photo">+ Add Photo</button>
+        <div class="hint" id="photo-hint" style="margin-top:6px;">Photos are resized and saved with this visit.</div>
+      </div>
+    </div>
+  </details>
+
+  <!-- 3. REQUIREMENTS & DELIVERABLES -->
+  <details class="section" data-section="requirements">
+    <summary><span class="num-tab">3</span>
+      <div class="sec-title"><h2>Requirements &amp; Deliverables</h2><div class="sec-sub">Inclusions, scope &amp; timing</div></div>
+      <span class="badge">0 noted</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </summary>
+    <div class="sec-body">
+      <div class="field">
+        <label>3.01 Project Inclusions<span class="hint">Select all that apply — scope notes below will open up for each one selected</span></label>
+        <div class="check-grid">
+          <label class="chip"><input type="checkbox" class="incl-toggle" data-key="majorEarthworks" data-field="req.inclusions" value="Major Earthworks"> Major Earthworks</label>
+          <label class="chip"><input type="checkbox" class="incl-toggle" data-key="minorEarthworks" data-field="req.inclusions" value="Minor Earthworks"> Minor Earthworks</label>
+          <label class="chip"><input type="checkbox" class="incl-toggle" data-key="plumbing" data-field="req.inclusions" value="Plumbing"> Plumbing</label>
+          <label class="chip"><input type="checkbox" class="incl-toggle" data-key="concrete" data-field="req.inclusions" value="Concrete"> Concrete</label>
+          <label class="chip"><input type="checkbox" class="incl-toggle" data-key="fencing" data-field="req.inclusions" value="Fencing"> Fencing</label>
+          <label class="chip"><input type="checkbox" class="incl-toggle" data-key="products" data-field="req.inclusions" value="Products"> Products</label>
+          <label class="chip"><input type="checkbox" class="incl-toggle" data-key="shade" data-field="req.inclusions" value="Shade"> Shade</label>
+          <label class="chip"><input type="checkbox" class="incl-toggle" data-key="other" data-field="req.inclusions" value="Other"> Other</label>
+        </div>
+      </div>
+
+      <div class="field inclusion-block" data-inclusion="other" hidden>
+        <label>Specify Other Inclusion</label>
+        <input type="text" data-field="req.inclusionOtherLabel" placeholder="Describe the other inclusion">
+      </div>
+
+      <div id="inclusion-scope-blocks">
+        <div class="inclusion-block" data-inclusion="majorEarthworks" hidden>
+          <div class="subhead">Major Earthworks — Scope</div>
+          <div class="field"><label>In Scope</label>
+            <textarea data-field="req.inScope_majorEarthworks" data-label="Major Earthworks — In Scope" placeholder="What's included..."></textarea></div>
+          <div class="field"><label>Out of Scope</label>
+            <textarea data-field="req.outScope_majorEarthworks" data-label="Major Earthworks — Out of Scope" placeholder="What's excluded / client responsibility..."></textarea></div>
+        </div>
+
+        <div class="inclusion-block" data-inclusion="minorEarthworks" hidden>
+          <div class="subhead">Minor Earthworks — Scope</div>
+          <div class="field"><label>In Scope</label>
+            <textarea data-field="req.inScope_minorEarthworks" data-label="Minor Earthworks — In Scope" placeholder="What's included..."></textarea></div>
+          <div class="field"><label>Out of Scope</label>
+            <textarea data-field="req.outScope_minorEarthworks" data-label="Minor Earthworks — Out of Scope" placeholder="What's excluded / client responsibility..."></textarea></div>
+        </div>
+
+        <div class="inclusion-block" data-inclusion="plumbing" hidden>
+          <div class="subhead">Plumbing — Scope</div>
+          <div class="field"><label>In Scope</label>
+            <textarea data-field="req.inScope_plumbing" data-label="Plumbing — In Scope" placeholder="Troughs, pipework, tie-ins, bruise-point considerations..."></textarea></div>
+          <div class="field"><label>Out of Scope</label>
+            <textarea data-field="req.outScope_plumbing" data-label="Plumbing — Out of Scope" placeholder="What's excluded / client responsibility..."></textarea></div>
+        </div>
+
+        <div class="inclusion-block" data-inclusion="concrete" hidden>
+          <div class="subhead">Concrete — Scope</div>
+          <div class="field"><label>In Scope</label>
+            <textarea data-field="req.inScope_concrete" data-label="Concrete — In Scope" placeholder="Slabs, mesh spec, thickness, finish, excavation, deconfliction with existing infrastructure..."></textarea></div>
+          <div class="field"><label>Out of Scope</label>
+            <textarea data-field="req.outScope_concrete" data-label="Concrete — Out of Scope" placeholder="What's excluded / client responsibility..."></textarea></div>
+        </div>
+
+        <div class="inclusion-block" data-inclusion="fencing" hidden>
+          <div class="subhead">Fencing — Scope</div>
+          <div class="field"><label>In Scope</label>
+            <textarea data-field="req.inScope_fencing" data-label="Fencing — In Scope" placeholder="Rail type, material supply, gates, cattle tub / loading ramp fabrication..."></textarea></div>
+          <div class="field"><label>Out of Scope</label>
+            <textarea data-field="req.outScope_fencing" data-label="Fencing — Out of Scope" placeholder="What's excluded / client responsibility..."></textarea></div>
+        </div>
+
+        <div class="inclusion-block" data-inclusion="products" hidden>
+          <div class="subhead">Products — Scope</div>
+          <div class="field"><label>In Scope</label>
+            <textarea data-field="req.inScope_products" data-label="Products — In Scope" placeholder="Products being supplied..."></textarea></div>
+          <div class="field"><label>Out of Scope</label>
+            <textarea data-field="req.outScope_products" data-label="Products — Out of Scope" placeholder="What's excluded / client responsibility..."></textarea></div>
+        </div>
+
+        <div class="inclusion-block" data-inclusion="shade" hidden>
+          <div class="subhead">Shade — Scope</div>
+          <div class="field"><label>In Scope</label>
+            <textarea data-field="req.inScope_shade" data-label="Shade — In Scope" placeholder="Posts, fence line tie-in, structure size, payment arrangement..."></textarea></div>
+          <div class="field"><label>Out of Scope</label>
+            <textarea data-field="req.outScope_shade" data-label="Shade — Out of Scope" placeholder="What's excluded / client responsibility..."></textarea></div>
+        </div>
+
+        <div class="inclusion-block" data-inclusion="other" hidden>
+          <div class="subhead">Other — Scope</div>
+          <div class="field"><label>In Scope</label>
+            <textarea data-field="req.inScope_other" data-label="Other — In Scope" placeholder="What's included..."></textarea></div>
+          <div class="field"><label>Out of Scope</label>
+            <textarea data-field="req.outScope_other" data-label="Other — Out of Scope" placeholder="What's excluded / client responsibility..."></textarea></div>
+        </div>
+      </div>
+
+      <div class="subhead">3.02 Timeframes</div>
+      <div class="field">
+        <label>Required Completion Date</label>
+        <input type="date" data-field="req.completionDate">
+      </div>
+      <div class="field">
+        <label>Programming Notes</label>
+        <textarea data-field="req.timeframeNotes" placeholder="Delivery/workshop fab scheduling, milestones, site access windows, deconfliction dates..."></textarea>
+      </div>
+
+      <div class="subhead">3.03 Deliverables</div>
+      <p class="field-desc">A deliverable is a specific document, drawing, record, or certificate the project must produce and hand over as proof the work was designed, built, and tested to spec.</p>
+
+      <div class="field">
+        <label>Pre-Construction / Design</label>
+        <div class="check-grid">
+          <label class="chip"><input type="checkbox" data-field="req.deliv_preConstruction" value="Site Survey"> Site Survey</label>
+          <label class="chip"><input type="checkbox" data-field="req.deliv_preConstruction" value="Structural Steel Drawings"> Structural Steel Drawings</label>
+          <label class="chip"><input type="checkbox" data-field="req.deliv_preConstruction" value="Concrete Design Specs"> Concrete Design Specs</label>
+          <label class="chip"><input type="checkbox" data-field="req.deliv_preConstruction" value="Fencing Layout Plans"> Fencing Layout Plans</label>
+          <label class="chip"><input type="checkbox" data-field="req.deliv_preConstruction" value="Plumbing/Hydraulic Design"> Plumbing/Hydraulic Design</label>
+          <label class="chip"><input type="checkbox" data-field="req.deliv_preConstruction" value="Handling Facility Design"> Handling Facility Design</label>
+          <label class="chip"><input type="checkbox" data-field="req.deliv_preConstruction" value="Engineering Certification"> Engineering Certification</label>
+          <label class="chip"><input type="checkbox" data-field="req.deliv_preConstruction" value="Geo Reports"> Geo Reports</label>
+          <label class="chip"><input type="checkbox" data-field="req.deliv_preConstruction" value="Council Approval"> Council Approval</label>
+          <label class="chip"><input type="checkbox" data-field="req.deliv_preConstruction" value="Development Approval"> Development Approval</label>
+          <label class="chip"><input type="checkbox" data-field="req.deliv_preConstruction" value="Engineering Prelims"> Engineering Prelims</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Procurement</label>
+        <div class="check-grid">
+          <label class="chip"><input type="checkbox" data-field="req.deliv_procurement" value="Bill of Quantities"> Bill of Quantities</label>
+          <label class="chip"><input type="checkbox" data-field="req.deliv_procurement" value="Material Certifications"> Material Certifications</label>
+          <label class="chip"><input type="checkbox" data-field="req.deliv_procurement" value="Subcontractor Scope"> Subcontractor Scope</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>During Construction</label>
+        <div class="check-grid">
+          <label class="chip"><input type="checkbox" data-field="req.deliv_construction" value="Concrete Pour Records"> Concrete Pour Records</label>
+          <label class="chip"><input type="checkbox" data-field="req.deliv_construction" value="Weld Inspection"> Weld Inspection</label>
+          <label class="chip"><input type="checkbox" data-field="req.deliv_construction" value="Pressure Testing of Plumbing"> Pressure Testing of Plumbing</label>
+          <label class="chip"><input type="checkbox" data-field="req.deliv_construction" value="Electrical Diagrams"> Electrical Diagrams</label>
+          <label class="chip"><input type="checkbox" data-field="req.deliv_construction" value="Engineering Certification"> Engineering Certification</label>
+          <label class="chip"><input type="checkbox" data-field="req.deliv_construction" value="Building Certification"> Building Certification</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Handover</label>
+        <div class="check-grid">
+          <label class="chip"><input type="checkbox" data-field="req.deliv_handover" value="As-Built Drawing"> As-Built Drawing</label>
+          <label class="chip"><input type="checkbox" data-field="req.deliv_handover" value="Compliance Certificates"> Compliance Certificates</label>
+          <label class="chip"><input type="checkbox" data-field="req.deliv_handover" value="O&amp;M Manual"> O&amp;M Manual</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Deliverables Notes</label>
+        <textarea data-field="req.deliverablesNotes" placeholder="Specific formats required, submission deadlines, who each deliverable goes to..."></textarea>
+      </div>
+    </div>
+  </details>
+
+  <!-- 4. PROJECT ADMINISTRATION -->
+  <details class="section" data-section="admin">
+    <summary><span class="num-tab">4</span>
+      <div class="sec-title"><h2>Project Administration</h2><div class="sec-sub">Contracts, inductions, compliance</div></div>
+      <span class="badge">0 noted</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </summary>
+    <div class="sec-body">
+      <div class="field"><label>4.01 Contract &amp; PPSR Requirements</label>
+        <textarea data-field="admin.contractPpsr" placeholder="PO status, contract requirements, PPSR registration needs..."></textarea></div>
+      <div class="field"><label>4.02 Project Induction Requirements</label>
+        <textarea data-field="admin.induction" placeholder="Online / onsite induction requirements..."></textarea></div>
+      <div class="field"><label>4.03 Project Ticket Requirements</label>
+        <textarea data-field="admin.tickets" placeholder="Tickets/licences required for this site..."></textarea></div>
+      <div class="field"><label>4.04 Site Specific Requirements</label>
+        <textarea data-field="admin.siteSpecific" placeholder="Anything unique to this site..."></textarea></div>
+      <div class="field"><label>4.05 SWMS, Dial Before You Dig, SDS Pack</label>
+        <textarea data-field="admin.swmsDbydSds" placeholder="SWMS considerations, DBYD feasibility, SDS pack needs..."></textarea></div>
+    </div>
+  </details>
+
+  <!-- 5. QUALITY ASSURANCE -->
+  <details class="section" data-section="qa">
+    <summary><span class="num-tab">5</span>
+      <div class="sec-title"><h2>Quality Assurance</h2><div class="sec-sub">Internal, client &amp; external QA</div></div>
+      <span class="badge">0 noted</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </summary>
+    <div class="sec-body">
+      <div class="field"><label>5.01 Internal QA Requirements</label>
+        <textarea data-field="qa.internal" placeholder="Standard ITP sign-offs, or anything extra..."></textarea></div>
+      <div class="field"><label>5.02 Client QA Requirements</label>
+        <textarea data-field="qa.client" placeholder="Anything the client specifically requires..."></textarea></div>
+      <div class="field"><label>5.03 External QA Requirements</label>
+        <textarea data-field="qa.external" placeholder="Engineer sign-off, certifier, third-party inspection..."></textarea></div>
+    </div>
+  </details>
+
+  <!-- 6. PERSONNEL -->
+  <details class="section" data-section="personnel">
+    <summary><span class="num-tab">6</span>
+      <div class="sec-title"><h2>Personnel</h2><div class="sec-sub">Crew &amp; tradesmen</div></div>
+      <span class="badge">0 noted</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </summary>
+    <div class="sec-body">
+      <div class="field"><label>6.01 Assigned Personnel</label>
+        <textarea data-field="personnel.assigned" placeholder="Who's likely to be assigned to this job..."></textarea></div>
+      <div class="field">
+        <label>6.02 Labour &amp; Tradesmen Requirements</label>
+        <div class="check-grid">
+          <label class="chip"><input type="checkbox" data-field="personnel.trades" value="Concreter"> Concreter</label>
+          <label class="chip"><input type="checkbox" data-field="personnel.trades" value="Fencer"> Fencer</label>
+          <label class="chip"><input type="checkbox" data-field="personnel.trades" value="Plumber"> Plumber</label>
+          <label class="chip"><input type="checkbox" data-field="personnel.trades" value="Welder/Fabricator"> Welder/Fabricator</label>
+          <label class="chip"><input type="checkbox" data-field="personnel.trades" value="Electrician"> Electrician</label>
+          <label class="chip"><input type="checkbox" data-field="personnel.trades" value="Machine Operator"> Machine Operator</label>
+          <label class="chip"><input type="checkbox" data-field="personnel.trades" value="General Labourer"> General Labourer</label>
+          <label class="chip"><input type="checkbox" data-field="personnel.trades" value="Leading Hand/Supervisor"> Leading Hand/Supervisor</label>
+          <label class="chip"><input type="checkbox" data-field="personnel.trades" value="Certifier/Engineer"> Certifier/Engineer</label>
+          <label class="chip"><input type="checkbox" data-field="personnel.trades" value="Other"> Other</label>
+        </div>
+      </div>
+      <div class="field"><label>Additional Details</label>
+        <textarea data-field="personnel.tradesmen" placeholder="Licensed plumber, certifier, specialist welder, headcount, dates needed on site..."></textarea></div>
+    </div>
+  </details>
+
+  <!-- 7. ACCOMMODATION -->
+  <details class="section" data-section="accommodation">
+    <summary><span class="num-tab">7</span>
+      <div class="sec-title"><h2>Accommodation</h2><div class="sec-sub">Where the crew will stay</div></div>
+      <span class="badge">0 noted</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </summary>
+    <div class="sec-body">
+      <div class="field">
+        <label>7.01 Accommodation Requirements</label>
+        <div class="check-grid">
+          <label class="chip"><input type="checkbox" data-field="accom.type" value="Client Supplied"> Client Supplied</label>
+          <label class="chip"><input type="checkbox" data-field="accom.type" value="Local Accommodation"> Local Accommodation</label>
+          <label class="chip"><input type="checkbox" data-field="accom.type" value="Caravans"> Caravans</label>
+          <label class="chip"><input type="checkbox" data-field="accom.type" value="Other"> Other</label>
+        </div>
+      </div>
+      <div class="field">
+        <label>Details</label>
+        <textarea data-field="accom.details" placeholder="e.g. Location to site, bedding requirements, services on site/required..."></textarea>
+      </div>
+      <div class="field"><label>7.02 POC for Accommodation</label>
+        <input type="text" data-field="accom.poc" placeholder="Name and contact"></div>
+      <div class="field"><label>7.03 Additional Information</label>
+        <textarea data-field="accom.additional" placeholder="Anything else about accommodation..."></textarea></div>
+    </div>
+  </details>
+
+  <!-- 8. MACHINERY -->
+  <details class="section" data-section="machinery">
+    <summary><span class="num-tab">8</span>
+      <div class="sec-title"><h2>Machinery</h2><div class="sec-sub">Equipment, fuel &amp; supply</div></div>
+      <span class="badge">0 noted</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </summary>
+    <div class="sec-body">
+      <div class="field">
+        <label>8.01 Equipment &amp; Machinery Required<span class="hint">Tick what's needed — add quantity, dates or supplier notes alongside each item</span></label>
+        <div class="tick-detail-list" id="machinery-list"></div>
+      </div>
+
+      <div class="field">
+        <label>8.02 Fuel</label>
+        <div class="fuel-row">
+          <span class="fuel-label">Unleaded</span>
+          <div class="check-grid">
+            <label class="chip"><input type="checkbox" data-field="mach.fuelUnleaded" value="Client Supplied"> Client Supplied</label>
+            <label class="chip"><input type="checkbox" data-field="mach.fuelUnleaded" value="PFIS Supplied"> PFIS Supplied</label>
+          </div>
+        </div>
+        <div class="fuel-row">
+          <span class="fuel-label">Diesel</span>
+          <div class="check-grid">
+            <label class="chip"><input type="checkbox" data-field="mach.fuelDiesel" value="Client Supplied"> Client Supplied</label>
+            <label class="chip"><input type="checkbox" data-field="mach.fuelDiesel" value="PFIS Supplied"> PFIS Supplied</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="field"><label>8.03 Batch Plant Details</label>
+        <textarea data-field="mach.concrete" placeholder="Batch plant location/supplier, access for trucks, lead times..."></textarea></div>
+      <div class="field">
+        <label>8.04 Site Equipment</label>
+        <div class="check-grid">
+          <label class="chip"><input type="checkbox" data-field="mach.siteEquipment" value="Site Office"> Site Office</label>
+          <label class="chip"><input type="checkbox" data-field="mach.siteEquipment" value="Lunch Room"> Lunch Room</label>
+          <label class="chip"><input type="checkbox" data-field="mach.siteEquipment" value="Generator"> Generator</label>
+          <label class="chip"><input type="checkbox" data-field="mach.siteEquipment" value="Starlink"> Starlink</label>
+          <label class="chip"><input type="checkbox" data-field="mach.siteEquipment" value="Toilet Block"> Toilet Block</label>
+          <label class="chip"><input type="checkbox" data-field="mach.siteEquipment" value="Water Tank"> Water Tank</label>
+          <label class="chip"><input type="checkbox" data-field="mach.siteEquipment" value="Cooking Equipment"> Cooking Equipment</label>
+        </div>
+      </div>
+      <div class="field">
+        <label>8.05 Machinery Remarks</label>
+        <textarea data-field="mach.remarks" placeholder="Anything else about machinery, equipment access, or site logistics..."></textarea>
+      </div>
+    </div>
+  </details>
+
+  <!-- 9. MATERIALS -->
+  <details class="section" data-section="materials">
+    <summary><span class="num-tab">9</span>
+      <div class="sec-title"><h2>Materials</h2><div class="sec-sub">BOQ &amp; supply</div></div>
+      <span class="badge">0 noted</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </summary>
+    <div class="sec-body">
+      <div class="field"><label>9.01 Procurement Details</label>
+        <textarea data-field="materials.boq" placeholder="Stages, pre-orders, timeframes..."></textarea></div>
+    </div>
+  </details>
+
+  <!-- 10. TECHNICAL DESIGN -->
+  <details class="section" data-section="technical">
+    <summary><span class="num-tab">10</span>
+      <div class="sec-title"><h2>Technical Design</h2><div class="sec-sub">Design detail by trade</div></div>
+      <span class="badge">0 noted</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </summary>
+    <div class="sec-body">
+      <div class="field">
+        <label>10.01 Fencing — Fence Design</label>
+        <div class="table-wrap">
+          <table class="dyn" id="dyn-table-fencing"></table>
+        </div>
+        <button class="add-row" type="button" data-add-table="fencing">+ Add Row</button>
+      </div>
+
+      <div class="field">
+        <label>10.02 Product</label>
+        <div class="table-wrap">
+          <table class="dyn" id="dyn-table-product"></table>
+        </div>
+        <button class="add-row" type="button" data-add-table="product">+ Add Row</button>
+      </div>
+
+      <div class="field">
+        <label>10.03 Plumbing</label>
+        <div class="table-wrap">
+          <table class="dyn" id="dyn-table-plumbing"></table>
+        </div>
+        <button class="add-row" type="button" data-add-table="plumbing">+ Add Row</button>
+      </div>
+
+      <div class="field"><label>10.04 Design Notes / Reference</label>
+        <textarea data-field="tech.notes" placeholder="Who's producing drawings, design references, engineering sign-off needed..."></textarea></div>
+      <input type="file" id="dyn-photo-input" accept="image/*" style="display:none">
+    </div>
+  </details>
+
+  <!-- 11. STAKEHOLDERS -->
+  <details class="section" data-section="stakeholders">
+    <summary><span class="num-tab">11</span>
+      <div class="sec-title"><h2>Stakeholders</h2><div class="sec-sub">Contacts on this project</div></div>
+      <span class="badge">0 noted</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </summary>
+    <div class="sec-body">
+      <div class="table-wrap">
+        <table class="dyn">
+          <thead><tr>
+            <th>Organisation</th><th>Name</th><th>Role</th><th>Contact</th><th>Relationship</th><th>Remarks</th><th></th>
+          </tr></thead>
+          <tbody id="stakeholder-body"></tbody>
+        </table>
+      </div>
+      <button class="add-row" id="add-stakeholder" type="button">+ Add stakeholder</button>
+    </div>
+  </details>
+
+  <!-- 12. ADDITIONAL INFORMATION -->
+  <details class="section" data-section="additional">
+    <summary><span class="num-tab">12</span>
+      <div class="sec-title"><h2>Additional Information</h2><div class="sec-sub">Open questions / RFIs</div></div>
+      <span class="badge">0 noted</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </summary>
+    <div class="sec-body">
+      <label style="font-size:.82rem;font-weight:600;">RFIs / Open Questions</label>
+      <div id="rfi-list"></div>
+      <button class="add-row" id="add-rfi" type="button">+ Add RFI</button>
+    </div>
+  </details>
+
+  <!-- 13. DRAWINGS -->
+  <details class="section" data-section="drawings">
+    <summary><span class="num-tab">13</span>
+      <div class="sec-title"><h2>Drawings</h2><div class="sec-sub">Sketch pad &mdash; grid paper</div></div>
+      <span class="badge">0 noted</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </summary>
+    <div class="sec-body">
+      <div class="sketch-toolbar">
+        <div class="sketch-group">
+          <button type="button" class="sk-btn active" data-tool="pen">Pen</button>
+          <button type="button" class="sk-btn" data-tool="line">Line</button>
+          <button type="button" class="sk-btn" data-tool="rect">Rect</button>
+          <button type="button" class="sk-btn" data-tool="circle">Circle</button>
+          <button type="button" class="sk-btn" data-tool="text">Label</button>
+          <button type="button" class="sk-btn" data-tool="eraser">Eraser</button>
+        </div>
+        <div class="sketch-group">
+          <button type="button" class="sw active" data-pen-color="#26241F" style="background:#26241F" aria-label="Black"></button>
+          <button type="button" class="sw" data-pen-color="#A85A2A" style="background:#A85A2A" aria-label="Rust"></button>
+          <button type="button" class="sw" data-pen-color="#2F5C8A" style="background:#2F5C8A" aria-label="Blue"></button>
+        </div>
+        <div class="sketch-group">
+          <button type="button" class="sk-btn" data-pen-width="1.5">Thin</button>
+          <button type="button" class="sk-btn active" data-pen-width="3">Medium</button>
+          <button type="button" class="sk-btn" data-pen-width="7">Thick</button>
+        </div>
+        <div class="sketch-group">
+          <button type="button" class="sk-btn" id="btn-undo">Undo</button>
+          <button type="button" class="sk-btn" id="btn-clear">Clear</button>
+        </div>
+      </div>
+      <canvas id="sketch-canvas" class="sketch-canvas"></canvas>
+      <div class="hint" style="margin-top:8px;">Pen for freehand, Line/Rect/Circle for plan shapes, Label to drop a dimension (e.g. "10m") — saved automatically with this visit.</div>
+    </div>
+  </details>
+
+  <!-- 14. PHOTOS -->
+  <details class="section" data-section="photos">
+    <summary><span class="num-tab">14</span>
+      <div class="sec-title"><h2>Photos</h2><div class="sec-sub">Additional photos &amp; comments</div></div>
+      <span class="badge">0 noted</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </summary>
+    <div class="sec-body">
+      <div id="extra-photo-list" class="extra-photo-grid"></div>
+      <input type="file" id="extra-photo-input" accept="image/*" multiple style="display:none">
+      <button class="add-row" type="button" id="btn-add-extra-photo">+ Add Photo</button>
+    </div>
+  </details>
+
+</main>
+
+<div id="sow-draft-output"></div>
+
+<footer class="note">
+  Saved visits are stored privately in this browser, on this device only — they don't sync anywhere else.
+  Use <strong>Copy Summary</strong> to paste captured notes into the SOW template when it's written up.
+</footer>
+
+<!-- Load modal -->
+<div class="overlay hidden" id="load-overlay">
+  <div class="modal">
+    <h3>Saved Site Visits</h3>
+    <div class="sub">Pick a visit to load. This replaces what's currently on screen.</div>
+    <div id="visit-list"><div class="empty-state">Loading...</div></div>
+    <button class="close-modal" id="close-load">Cancel</button>
+  </div>
+</div>
+
+<!-- Summary modal -->
+<div class="overlay hidden" id="summary-overlay">
+  <div class="modal">
+    <h3>Visit Summary</h3>
+    <div class="sub">Copied to clipboard — paste into the SOW draft, email, or notes app.</div>
+    <div id="summaryText"></div>
+    <button class="close-modal" id="close-summary">Close</button>
+  </div>
+</div>
+
+<!-- Confirm modal (custom, so it matches the app style instead of the browser's default dialog) -->
+<div class="overlay hidden" id="confirm-overlay">
+  <div class="modal">
+    <h3 id="confirm-title">Are you sure?</h3>
+    <div class="sub" id="confirm-message"></div>
+    <div style="display:flex;gap:10px;margin-top:6px;">
+      <button class="close-modal" id="confirm-cancel" style="flex:1;margin-top:0;">Cancel</button>
+      <button class="close-modal" id="confirm-ok" style="flex:1;margin-top:0;background:var(--rust);color:#fff;border-color:var(--rust);font-weight:600;">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- Label prompt modal (custom, so it matches the app style instead of the browser's default dialog) -->
+<div class="overlay hidden" id="label-overlay">
+  <div class="modal">
+    <h3>Add Label</h3>
+    <div class="sub">Type the text or dimension for this point (e.g. 10m, 3.5m gate).</div>
+    <input type="text" id="label-input" placeholder="e.g. 10m"
+      style="width:100%;padding:10px 11px;border:1px solid #D9D3C2;border-radius:7px;font-size:16px;margin-top:4px;">
+    <div style="display:flex;gap:10px;margin-top:14px;">
+      <button class="close-modal" id="label-cancel" style="flex:1;margin-top:0;">Cancel</button>
+      <button class="close-modal" id="label-ok" style="flex:1;margin-top:0;background:var(--navy);color:#fff;border-color:var(--navy);font-weight:600;">Add Label</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- Local storage (standalone, no Claude dependency) ---------------- */
+  /* IndexedDB-backed key/value store, mirroring the get/set/list/delete shape */
+  /* this file used to get from Claude's artifact bridge — but self-contained, */
+  /* so saving/loading works from any browser this file is opened in directly. */
+  var DB_NAME = "site_visit_intake";
+  var STORE_NAME = "visits";
+  var dbPromise = null;
+
+  function openDB(){
+    if (dbPromise) return dbPromise;
+    dbPromise = new Promise(function(resolve, reject){
+      if (!window.indexedDB){ reject(new Error("IndexedDB not supported")); return; }
+      var req = indexedDB.open(DB_NAME, 1);
+      req.onupgradeneeded = function(e){
+        var db = e.target.result;
+        if (!db.objectStoreNames.contains(STORE_NAME)) db.createObjectStore(STORE_NAME);
+      };
+      req.onsuccess = function(e){ resolve(e.target.result); };
+      req.onerror = function(e){ reject(e.target.error); };
+    });
+    return dbPromise;
+  }
+
+  var localDB = {
+    set: function(key, value){
+      return openDB().then(function(db){
+        return new Promise(function(resolve, reject){
+          var tx = db.transaction(STORE_NAME, "readwrite");
+          tx.objectStore(STORE_NAME).put(value, key);
+          tx.oncomplete = function(){ resolve({ key: key, value: value }); };
+          tx.onerror = function(){ reject(tx.error); };
+        });
+      });
+    },
+    get: function(key){
+      return openDB().then(function(db){
+        return new Promise(function(resolve, reject){
+          var tx = db.transaction(STORE_NAME, "readonly");
+          var req = tx.objectStore(STORE_NAME).get(key);
+          req.onsuccess = function(){
+            if (req.result === undefined) reject(new Error("Key not found"));
+            else resolve({ key: key, value: req.result });
+          };
+          req.onerror = function(){ reject(req.error); };
+        });
+      });
+    },
+    delete: function(key){
+      return openDB().then(function(db){
+        return new Promise(function(resolve, reject){
+          var tx = db.transaction(STORE_NAME, "readwrite");
+          tx.objectStore(STORE_NAME).delete(key);
+          tx.oncomplete = function(){ resolve({ key: key, deleted: true }); };
+          tx.onerror = function(){ reject(tx.error); };
+        });
+      });
+    },
+    list: function(prefix){
+      return openDB().then(function(db){
+        return new Promise(function(resolve, reject){
+          var tx = db.transaction(STORE_NAME, "readonly");
+          var store = tx.objectStore(STORE_NAME);
+          var keys = [];
+          if (store.getAllKeys){
+            var req = store.getAllKeys();
+            req.onsuccess = function(){
+              keys = Array.prototype.slice.call(req.result).filter(function(k){
+                return !prefix || String(k).indexOf(prefix) === 0;
+              });
+              resolve({ keys: keys });
+            };
+            req.onerror = function(){ reject(req.error); };
+          } else {
+            var cursorReq = store.openCursor();
+            cursorReq.onsuccess = function(e){
+              var cursor = e.target.result;
+              if (cursor){
+                if (!prefix || String(cursor.key).indexOf(prefix) === 0) keys.push(cursor.key);
+                cursor.continue();
+              } else {
+                resolve({ keys: keys });
+              }
+            };
+            cursorReq.onerror = function(){ reject(cursorReq.error); };
+          }
+        });
+      });
+    }
+  };
+
+  var stakeholders = [];
+  var rfis = [];
+  var photos = [];
+  var saveTimer = null;
+  var currentSlug = "";
+
+  function $(sel, ctx){ return (ctx||document).querySelector(sel); }
+  function $all(sel, ctx){ return Array.prototype.slice.call((ctx||document).querySelectorAll(sel)); }
+
+  function slugify(s){
+    return (s||"").trim().toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
+  }
+
+  /* ---------------- Serialize / Apply ---------------- */
+  function serialize(){
+    var data = {};
+    $all("[data-field]").forEach(function(el){
+      var path = el.getAttribute("data-field");
+      if (el.type === "checkbox"){
+        if (!data[path]) data[path] = [];
+        if (el.checked) data[path].push(el.value);
+      } else {
+        data[path] = el.value;
+      }
+    });
+    data.stakeholders = stakeholders;
+    data.rfis = rfis;
+    data.photos = photos;
+    data.dynTables = {};
+    Object.keys(DYN_TABLES).forEach(function(k){ data.dynTables[k] = DYN_TABLES[k].rows; });
+    data.sketch = sketchStrokes;
+    data.extraPhotos = additionalPhotos;
+    data._savedAt = new Date().toISOString();
+    return data;
+  }
+
+  function applyData(data){
+    data = data || {};
+    $all("[data-field]").forEach(function(el){
+      var path = el.getAttribute("data-field");
+      if (el.type === "checkbox"){
+        var vals = data[path];
+        el.checked = Array.isArray(vals) && vals.indexOf(el.value) !== -1;
+      } else if (data[path] !== undefined) {
+        el.value = data[path];
+      } else {
+        el.value = "";
+      }
+    });
+    stakeholders = Array.isArray(data.stakeholders) ? data.stakeholders : [];
+    rfis = Array.isArray(data.rfis) ? data.rfis : [];
+    photos = Array.isArray(data.photos) ? data.photos : [];
+    Object.keys(DYN_TABLES).forEach(function(k){
+      DYN_TABLES[k].rows = (data.dynTables && Array.isArray(data.dynTables[k])) ? data.dynTables[k] : [];
+    });
+    sketchStrokes = Array.isArray(data.sketch) ? data.sketch : [];
+    additionalPhotos = Array.isArray(data.extraPhotos) ? data.extraPhotos : [];
+    renderStakeholders();
+    renderRfis();
+    renderPhotos();
+    renderExtraPhotos();
+    renderAllDynTables();
+    sizeSketchCanvas();
+    redrawSketch();
+    updateGpsDisplay();
+    updateInclusions();
+    updateBadges();
+  }
+
+  function resetForm(){
+    $all("[data-field]").forEach(function(el){
+      if (el.type === "checkbox") el.checked = false; else el.value = "";
+    });
+    stakeholders = [];
+    rfis = [];
+    photos = [];
+    Object.keys(DYN_TABLES).forEach(function(k){ DYN_TABLES[k].rows = []; });
+    sketchStrokes = [];
+    additionalPhotos = [];
+    renderStakeholders();
+    renderRfis();
+    renderPhotos();
+    renderExtraPhotos();
+    renderAllDynTables();
+    sizeSketchCanvas();
+    redrawSketch();
+    updateGpsDisplay();
+    setGpsStatus("");
+    updateInclusions();
+    updateBadges();
+    currentSlug = "";
+    setStatus("idle", "Not saved yet");
+  }
+
+  /* ---------------- Stakeholders ---------------- */
+  function renderStakeholders(){
+    var body = $("#stakeholder-body");
+    if (!stakeholders.length){
+      body.innerHTML = '<tr><td colspan="7" style="color:#9C9484;font-size:.82rem;padding:12px 8px;">No stakeholders added yet.</td></tr>';
+      return;
+    }
+    body.innerHTML = stakeholders.map(function(s, i){
+      return '<tr>' +
+        cellInput(i,'org',s.org,'Organisation') +
+        cellInput(i,'name',s.name,'Name') +
+        cellInput(i,'role',s.role,'Role') +
+        cellInput(i,'contact',s.contact,'Phone / email') +
+        cellInput(i,'relationship',s.relationship,'e.g. Client') +
+        cellInput(i,'remarks',s.remarks,'Remarks') +
+        '<td><button class="row-del" data-del-stakeholder="'+i+'" type="button">&times;</button></td>' +
+      '</tr>';
+    }).join("");
+  }
+  function cellInput(i, field, val, placeholder){
+    val = val ? String(val).replace(/"/g,"&quot;") : "";
+    return '<td><input type="text" value="'+val+'" placeholder="'+placeholder+'" data-stakeholder="'+i+'" data-stakeholder-field="'+field+'"></td>';
+  }
+
+  /* ---------------- RFIs ---------------- */
+  function renderRfis(){
+    var list = $("#rfi-list");
+    if (!rfis.length){
+      list.innerHTML = '<div class="empty-state" style="padding:8px 0;">No RFIs added yet.</div>';
+      return;
+    }
+    list.innerHTML = rfis.map(function(r, i){
+      return '<div class="rfi-item'+(r.resolved?' resolved':'')+'">' +
+        '<input type="checkbox" data-rfi-resolved="'+i+'" '+(r.resolved?'checked':'')+'>' +
+        '<input type="text" value="'+(r.text||"").replace(/"/g,"&quot;")+'" placeholder="Open question for the client / engineering..." data-rfi-text="'+i+'">' +
+        '<button class="row-del" data-del-rfi="'+i+'" type="button">&times;</button>' +
+      '</div>';
+    }).join("");
+  }
+
+  document.addEventListener("click", function(e){
+    if (e.target.id === "add-stakeholder"){
+      stakeholders.push({org:"",name:"",role:"",contact:"",relationship:"",remarks:""});
+      renderStakeholders(); scheduleSave(); updateBadges();
+    }
+    if (e.target.id === "add-rfi"){
+      rfis.push({text:"", resolved:false});
+      renderRfis(); scheduleSave(); updateBadges();
+    }
+    var delS = e.target.getAttribute("data-del-stakeholder");
+    if (delS !== null){ stakeholders.splice(+delS,1); renderStakeholders(); scheduleSave(); updateBadges(); }
+    var delR = e.target.getAttribute("data-del-rfi");
+    if (delR !== null){ rfis.splice(+delR,1); renderRfis(); scheduleSave(); updateBadges(); }
+    var delP = e.target.getAttribute("data-del-photo");
+    if (delP !== null){ photos.splice(+delP,1); renderPhotos(); scheduleSave(); updateBadges(); }
+    var delExtraPhoto = e.target.getAttribute("data-del-extra-photo");
+    if (delExtraPhoto !== null){
+      additionalPhotos.splice(+delExtraPhoto,1);
+      renderExtraPhotos();
+      scheduleSave(); updateBadges();
+    }
+    var addTable = e.target.getAttribute("data-add-table");
+    if (addTable){
+      var t = DYN_TABLES[addTable];
+      var newRow = {};
+      t.columns.forEach(function(c){ newRow[c.key] = ""; });
+      t.rows.push(newRow);
+      renderDynTable(addTable);
+      scheduleSave(); updateBadges();
+    }
+    var delDynTable = e.target.getAttribute("data-dyn-del-table");
+    if (delDynTable){
+      var delDynRow = +e.target.getAttribute("data-dyn-del-row");
+      DYN_TABLES[delDynTable].rows.splice(delDynRow, 1);
+      renderDynTable(delDynTable);
+      scheduleSave(); updateBadges();
+    }
+    var photoAddTable = e.target.getAttribute("data-dyn-photo-add");
+    if (photoAddTable){
+      pendingPhotoTarget = { table: photoAddTable, row: +e.target.getAttribute("data-dyn-photo-row") };
+      $("#dyn-photo-input").click();
+    }
+    var photoDelTable = e.target.getAttribute("data-dyn-photo-del-table");
+    if (photoDelTable){
+      var photoDelRow = +e.target.getAttribute("data-dyn-photo-del-row");
+      delete DYN_TABLES[photoDelTable].rows[photoDelRow].photo;
+      renderDynTable(photoDelTable);
+      scheduleSave(); updateBadges();
+    }
+  });
+
+  document.addEventListener("input", function(e){
+    var si = e.target.getAttribute("data-stakeholder");
+    if (si !== null){
+      stakeholders[+si][e.target.getAttribute("data-stakeholder-field")] = e.target.value;
+      scheduleSave(); updateBadges();
+    }
+    var ri = e.target.getAttribute("data-rfi-text");
+    if (ri !== null){ rfis[+ri].text = e.target.value; scheduleSave(); updateBadges(); }
+    var dynT = e.target.getAttribute("data-dyn-table");
+    if (dynT){
+      DYN_TABLES[dynT].rows[+e.target.getAttribute("data-dyn-row")][e.target.getAttribute("data-dyn-col")] = e.target.value;
+      scheduleSave(); updateBadges();
+    }
+    var extraCapIdx = e.target.getAttribute("data-extra-caption");
+    if (extraCapIdx !== null){
+      additionalPhotos[+extraCapIdx].caption = e.target.value;
+      scheduleSave(); updateBadges();
+    }
+    if (e.target.hasAttribute("data-field")){ scheduleSave(); updateBadges(); }
+  });
+  document.addEventListener("change", function(e){
+    var rc = e.target.getAttribute("data-rfi-resolved");
+    if (rc !== null){
+      rfis[+rc].resolved = e.target.checked;
+      renderRfis(); scheduleSave(); updateBadges();
+    }
+    if (e.target.hasAttribute("data-field")){ scheduleSave(); updateBadges(); }
+    if (e.target.classList && e.target.classList.contains("incl-toggle")){ updateInclusions(); }
+    var dynTChange = e.target.getAttribute("data-dyn-table");
+    if (dynTChange){
+      DYN_TABLES[dynTChange].rows[+e.target.getAttribute("data-dyn-row")][e.target.getAttribute("data-dyn-col")] = e.target.value;
+      scheduleSave(); updateBadges();
+    }
+  });
+  /* ---------------- Dynamic design tables (Technical Design) ---------------- */
+  var DYN_TABLES = {
+    fencing: {
+      columns: [
+        { key:"type", label:"Type", type:"select", options:["Front Fence","Divisional Fence","Laneway Fence","Running Post","Gate Post","Bunk Rail","Cap Rail","Gate"] },
+        { key:"material", label:"Material", type:"text" },
+        { key:"heights", label:"Heights", type:"text" },
+        { key:"details", label:"Additional Details", type:"text" },
+        { key:"photo", label:"Photo", type:"photo" }
+      ],
+      rows: []
+    },
+    product: {
+      columns: [
+        { key:"type", label:"Type", type:"select", options:["Draft","Crush","Weighting Bay","WeighBox","MEQ Box","Curved Race","Straight Race","Dual Alley","Cattle Tub","Slide Gate","Gate","Loading Ramp"] },
+        { key:"material", label:"Material", type:"text" },
+        { key:"actuation", label:"Actuation", type:"select", options:["Pneumatic","Hydraulic","Manual","Electric"] },
+        { key:"details", label:"Additional Details", type:"text" },
+        { key:"photo", label:"Photo", type:"photo" }
+      ],
+      rows: []
+    },
+    plumbing: {
+      columns: [
+        { key:"type", label:"Type", type:"select", options:["Main Line","Water Line","Sewer Line","Trough","Sprinkler","Water Points"] },
+        { key:"supplier", label:"Supplier", type:"select", options:["Condon","Wild River","Civilmart","NSW"] },
+        { key:"measurements", label:"Measurements", type:"text" },
+        { key:"details", label:"Additional Details", type:"text" },
+        { key:"photo", label:"Photo", type:"photo" }
+      ],
+      rows: []
+    }
+  };
+
+  function renderDynTable(id){
+    var t = DYN_TABLES[id];
+    var container = document.getElementById("dyn-table-" + id);
+    if (!t || !container) return;
+    var thead = "<thead><tr>" + t.columns.map(function(c){ return "<th>"+c.label+"</th>"; }).join("") + "<th></th></tr></thead>";
+    var tbody;
+    if (!t.rows.length){
+      tbody = '<tbody><tr><td colspan="'+(t.columns.length+1)+'" style="color:#9C9484;font-size:.82rem;padding:12px 8px;">No rows added yet.</td></tr></tbody>';
+    } else {
+      tbody = "<tbody>" + t.rows.map(function(row, i){
+        var cells = t.columns.map(function(c){
+          if (c.type === "select"){
+            var opts = '<option value="">Select...</option>' + c.options.map(function(o){
+              return '<option'+(row[c.key]===o?' selected':'')+'>'+o+'</option>';
+            }).join("");
+            return '<td><select data-dyn-table="'+id+'" data-dyn-row="'+i+'" data-dyn-col="'+c.key+'">'+opts+'</select></td>';
+          }
+          if (c.type === "photo"){
+            if (row[c.key]){
+              return '<td><div class="row-photo-wrap">' +
+                '<img class="row-photo-thumb" src="'+row[c.key]+'" data-dyn-photo-add="'+id+'" data-dyn-photo-row="'+i+'" alt="Row photo">' +
+                '<button type="button" class="row-photo-del" data-dyn-photo-del-table="'+id+'" data-dyn-photo-del-row="'+i+'">&times;</button>' +
+              '</div></td>';
+            }
+            return '<td><button type="button" class="row-photo-btn" data-dyn-photo-add="'+id+'" data-dyn-photo-row="'+i+'">+ Photo</button></td>';
+          }
+          var val = row[c.key] ? String(row[c.key]).replace(/"/g,"&quot;") : "";
+          return '<td><input type="text" value="'+val+'" data-dyn-table="'+id+'" data-dyn-row="'+i+'" data-dyn-col="'+c.key+'"></td>';
+        }).join("");
+        return "<tr>" + cells + '<td><button class="row-del" type="button" data-dyn-del-table="'+id+'" data-dyn-del-row="'+i+'">&times;</button></td></tr>';
+      }).join("") + "</tbody>";
+    }
+    container.innerHTML = thead + tbody;
+  }
+
+  function renderAllDynTables(){
+    Object.keys(DYN_TABLES).forEach(renderDynTable);
+  }
+
+  /* ---------------- Sketch pad (Drawings) ---------------- */
+  var sketchStrokes = [];
+  var sketchCanvas, sketchCtx;
+  var sketchIsDrawing = false;
+  var sketchActiveStroke = null;
+  var sketchDragStart = null;
+  var sketchTool = "pen";
+  var sketchPenColor = "#26241F";
+  var sketchPenWidth = 3;
+  var BASE_CANVAS_W = 1000;
+
+  function initSketchPad(){
+    sketchCanvas = document.getElementById("sketch-canvas");
+    if (!sketchCanvas) return;
+    sketchCtx = sketchCanvas.getContext("2d");
+    sizeSketchCanvas();
+    window.addEventListener("resize", debounce(function(){ sizeSketchCanvas(); redrawSketch(); }, 200));
+
+    // Belt-and-braces: some Safari versions still allow page scroll/bounce
+    // from a touch that starts on the canvas even with touch-action:none set.
+    // Explicitly block the underlying touch events too, and hard-lock body
+    // scroll for the duration of a stroke.
+    ["touchstart","touchmove"].forEach(function(evt){
+      sketchCanvas.addEventListener(evt, function(e){ e.preventDefault(); }, { passive: false });
+    });
+    function lockPageScroll(){
+      document.body.style.overflow = "hidden";
+      document.body.style.touchAction = "none";
+    }
+    function unlockPageScroll(){
+      document.body.style.overflow = "";
+      document.body.style.touchAction = "";
+    }
+
+    sketchCanvas.addEventListener("pointerdown", function(e){
+      lockPageScroll();
+      var pos = sketchPosFrac(e);
+
+      if (sketchTool === "text"){
+        openLabelPrompt(pos);
+        unlockPageScroll();
+        e.preventDefault();
+        return;
+      }
+
+      sketchIsDrawing = true;
+      sketchDragStart = pos;
+
+      if (sketchTool === "pen" || sketchTool === "eraser"){
+        sketchActiveStroke = {
+          kind: "freehand",
+          color: sketchTool === "eraser" ? "#000000" : sketchPenColor,
+          width: sketchPenWidth,
+          erase: sketchTool === "eraser",
+          points: [pos]
+        };
+        sketchCtx.globalCompositeOperation = sketchActiveStroke.erase ? "destination-out" : "source-over";
+        sketchCtx.strokeStyle = sketchActiveStroke.color;
+        sketchCtx.lineWidth = sketchStrokeWidthPx(sketchActiveStroke.width);
+        sketchCtx.lineJoin = "round";
+        sketchCtx.lineCap = "round";
+        var px = sketchToPx(pos);
+        sketchCtx.beginPath();
+        sketchCtx.moveTo(px.x, px.y);
+      }
+
+      if (sketchCanvas.setPointerCapture) { try { sketchCanvas.setPointerCapture(e.pointerId); } catch(err){} }
+      e.preventDefault();
+    });
+
+    sketchCanvas.addEventListener("pointermove", function(e){
+      if (!sketchIsDrawing) return;
+      var pos = sketchPosFrac(e);
+
+      if (sketchTool === "pen" || sketchTool === "eraser"){
+        sketchActiveStroke.points.push(pos);
+        var px = sketchToPx(pos);
+        sketchCtx.lineTo(px.x, px.y);
+        sketchCtx.stroke();
+      } else if (sketchTool === "line" || sketchTool === "rect" || sketchTool === "circle"){
+        redrawSketch();
+        drawStroke({ kind: sketchTool, start: sketchDragStart, end: pos, color: sketchPenColor, width: sketchPenWidth });
+      }
+      e.preventDefault();
+    });
+
+    function endStroke(e){
+      if (!sketchIsDrawing) return;
+      sketchIsDrawing = false;
+      unlockPageScroll();
+      sketchCtx.globalCompositeOperation = "source-over";
+
+      if (sketchTool === "pen" || sketchTool === "eraser"){
+        if (sketchActiveStroke && sketchActiveStroke.points.length > 1){
+          sketchStrokes.push(sketchActiveStroke);
+          scheduleSave();
+          updateBadges();
+        }
+        sketchActiveStroke = null;
+      } else if (sketchTool === "line" || sketchTool === "rect" || sketchTool === "circle"){
+        var pos = (e && e.clientX != null) ? sketchPosFrac(e) : sketchDragStart;
+        var dx = Math.abs(pos.x - sketchDragStart.x), dy = Math.abs(pos.y - sketchDragStart.y);
+        if (dx > 0.004 || dy > 0.004){
+          sketchStrokes.push({ kind: sketchTool, start: sketchDragStart, end: pos, color: sketchPenColor, width: sketchPenWidth });
+          scheduleSave();
+          updateBadges();
+        }
+        redrawSketch();
+      }
+      sketchDragStart = null;
+    }
+    sketchCanvas.addEventListener("pointerup", endStroke);
+    sketchCanvas.addEventListener("pointercancel", endStroke);
+    sketchCanvas.addEventListener("pointerleave", endStroke);
+  }
+
+  function debounce(fn, ms){
+    var t;
+    return function(){
+      clearTimeout(t);
+      var args = arguments;
+      t = setTimeout(function(){ fn.apply(null, args); }, ms);
+    };
+  }
+
+  function sizeSketchCanvas(){
+    var dpr = window.devicePixelRatio || 1;
+    var displayWidth = sketchCanvas.clientWidth || sketchCanvas.parentElement.clientWidth;
+    var displayHeight = Math.round(displayWidth * 0.7);
+    sketchCanvas.style.height = displayHeight + "px";
+    sketchCanvas.width = Math.round(displayWidth * dpr);
+    sketchCanvas.height = Math.round(displayHeight * dpr);
+  }
+
+  function sketchPosFrac(e){
+    var rect = sketchCanvas.getBoundingClientRect();
+    return {
+      x: (e.clientX - rect.left) / rect.width,
+      y: (e.clientY - rect.top) / rect.height
+    };
+  }
+  function sketchToPx(p){
+    return { x: p.x * sketchCanvas.width, y: p.y * sketchCanvas.height };
+  }
+  function sketchStrokeWidthPx(w){
+    return w * (sketchCanvas.width / BASE_CANVAS_W);
+  }
+
+  function drawStroke(stroke){
+    var kind = stroke.kind || "freehand";
+    sketchCtx.globalCompositeOperation = stroke.erase ? "destination-out" : "source-over";
+    sketchCtx.strokeStyle = stroke.color;
+    sketchCtx.fillStyle = stroke.color;
+    sketchCtx.lineWidth = sketchStrokeWidthPx(stroke.width);
+    sketchCtx.lineJoin = "round";
+    sketchCtx.lineCap = "round";
+
+    if (kind === "freehand"){
+      sketchCtx.beginPath();
+      stroke.points.forEach(function(p, idx){
+        var px = sketchToPx(p);
+        if (idx === 0) sketchCtx.moveTo(px.x, px.y); else sketchCtx.lineTo(px.x, px.y);
+      });
+      sketchCtx.stroke();
+    } else if (kind === "line"){
+      var a = sketchToPx(stroke.start), b = sketchToPx(stroke.end);
+      sketchCtx.beginPath();
+      sketchCtx.moveTo(a.x, a.y);
+      sketchCtx.lineTo(b.x, b.y);
+      sketchCtx.stroke();
+    } else if (kind === "rect"){
+      var ra = sketchToPx(stroke.start), rb = sketchToPx(stroke.end);
+      sketchCtx.strokeRect(Math.min(ra.x,rb.x), Math.min(ra.y,rb.y), Math.abs(rb.x-ra.x), Math.abs(rb.y-ra.y));
+    } else if (kind === "circle"){
+      var ca = sketchToPx(stroke.start), cb = sketchToPx(stroke.end);
+      var cx = (ca.x+cb.x)/2, cy = (ca.y+cb.y)/2, rx = Math.abs(cb.x-ca.x)/2, ry = Math.abs(cb.y-ca.y)/2;
+      sketchCtx.beginPath();
+      sketchCtx.ellipse(cx, cy, Math.max(rx,0.01), Math.max(ry,0.01), 0, 0, Math.PI*2);
+      sketchCtx.stroke();
+    } else if (kind === "text"){
+      var tp = sketchToPx(stroke.pos);
+      var fontPx = Math.max(14, sketchStrokeWidthPx(stroke.width) * 4 + 10);
+      sketchCtx.font = "600 " + fontPx + "px -apple-system, sans-serif";
+      sketchCtx.textBaseline = "top";
+      sketchCtx.fillText(stroke.text, tp.x, tp.y);
+    }
+    sketchCtx.globalCompositeOperation = "source-over";
+  }
+
+  function redrawSketch(){
+    if (!sketchCtx) return;
+    sketchCtx.clearRect(0, 0, sketchCanvas.width, sketchCanvas.height);
+    sketchStrokes.forEach(drawStroke);
+  }
+
+  /* ---------------- Machinery equipment list ---------------- */
+  var MACHINERY_ITEMS = [
+    ["skidSteer","Skid Steer"],
+    ["excavator8t","Excavator 8 Ton"],
+    ["excavator13t","Excavator 13 Ton"],
+    ["manitou","Manitou"],
+    ["forklift","Forklift 1\u20132.5 Ton"],
+    ["scissorLift","Scissor Lift \u2013 Weekly"],
+    ["boomLift","Boom Lift"],
+    ["concreteAgi","Concrete Agi"],
+    ["tipper","Tipper"],
+    ["container","Container"],
+    ["tempFencePanel","Temporary Fence Panel"],
+    ["plateCompactor","Plate Compactor"],
+    ["trenchRoller","Trench Roller"],
+    ["airCompressor","Air Compressor"],
+    ["airHose","Air Hose"],
+    ["postTamper","Post Tamper"],
+    ["posiPostRammer","Posi Post Rammer"],
+    ["polyWelder","Poly Welder"],
+    ["grader","Grader"],
+    ["roller25t","Roller 2.5 Ton"],
+    ["posiSlasher","Posi Slasher"],
+    ["franna","Franna"],
+    ["concretePump","Concrete Pump"]
+  ];
+
+  function renderMachineryList(){
+    var el = $("#machinery-list");
+    if (!el) return;
+    el.innerHTML = MACHINERY_ITEMS.map(function(pair){
+      var key = pair[0], label = pair[1];
+      return '<div class="tick-detail-row">' +
+        '<label class="chk"><input type="checkbox" data-field="mach.equip" value="'+label+'"> '+label+'</label>' +
+        '<input type="text" class="detail-input" data-field="mach.detail_'+key+'" data-label="'+label+' \u2014 Details" placeholder="Qty / dates / supplier...">' +
+      '</div>';
+    }).join("");
+  }
+
+  /* ---------------- Photos ---------------- */
+  function renderPhotos(){
+    var gallery = $("#photo-gallery");
+    gallery.innerHTML = photos.map(function(p, i){
+      return '<div class="photo-thumb"><img src="'+p.dataUrl+'" alt="Site photo">' +
+        '<button type="button" data-del-photo="'+i+'">&times;</button></div>';
+    }).join("");
+    var hint = $("#photo-hint");
+    hint.textContent = photos.length > 12
+      ? photos.length + " photos attached — large numbers of photos may hit device storage limits"
+      : "Photos are resized and saved with this visit.";
+  }
+
+  /* ---------------- Section 14: additional captioned photos ---------------- */
+  var additionalPhotos = [];
+  function renderExtraPhotos(){
+    var list = $("#extra-photo-list");
+    if (!additionalPhotos.length){
+      list.innerHTML = "";
+      return;
+    }
+    list.innerHTML = additionalPhotos.map(function(p, i){
+      var caption = p.caption ? String(p.caption).replace(/</g,"&lt;") : "";
+      return '<div class="extra-photo-card">' +
+        '<img src="'+p.dataUrl+'" alt="Photo">' +
+        '<textarea placeholder="Add a comment..." data-extra-caption="'+i+'">'+caption+'</textarea>' +
+        '<div class="extra-photo-footer"><button type="button" data-del-extra-photo="'+i+'">Remove</button></div>' +
+      '</div>';
+    }).join("");
+  }
+  function addExtraPhotoFile(file){
+    resizeImageFile(file, 900, 0.6, function(dataUrl){
+      additionalPhotos.push({ dataUrl: dataUrl, caption: "" });
+      renderExtraPhotos();
+      scheduleSave();
+      updateBadges();
+    });
+  }
+
+  function resizeImageFile(file, maxW, quality, cb){
+    var reader = new FileReader();
+    reader.onload = function(ev){
+      var img = new Image();
+      img.onload = function(){
+        var scale = Math.min(1, maxW / img.width);
+        var canvas = document.createElement("canvas");
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        cb(canvas.toDataURL("image/jpeg", quality));
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function addPhotoFile(file){
+    resizeImageFile(file, 900, 0.6, function(dataUrl){
+      photos.push({ name: file.name || "photo.jpg", dataUrl: dataUrl });
+      renderPhotos();
+      scheduleSave();
+      updateBadges();
+    });
+  }
+
+  var pendingPhotoTarget = null;
+  function addDynRowPhotoFile(file){
+    if (!pendingPhotoTarget) return;
+    var target = pendingPhotoTarget;
+    resizeImageFile(file, 480, 0.55, function(dataUrl){
+      DYN_TABLES[target.table].rows[target.row].photo = dataUrl;
+      renderDynTable(target.table);
+      scheduleSave();
+      updateBadges();
+    });
+  }
+
+  /* ---------------- Project Inclusions toggle ---------------- */
+  function updateInclusions(){
+    $all(".incl-toggle").forEach(function(cb){
+      // Note: "other" has two blocks sharing this attribute (the specify-label
+      // field and the in/out scope block), so toggle every match, not just one.
+      $all('.inclusion-block[data-inclusion="'+cb.dataset.key+'"]').forEach(function(block){
+        block.hidden = !cb.checked;
+      });
+    });
+  }
+
+  /* ---------------- GPS capture ---------------- */
+  function setGpsStatus(text){ $("#gps-status").textContent = text; }
+
+  function updateGpsDisplay(){
+    var link = $("#gps-link-field").value;
+    var disp = $("#gps-link-display");
+    disp.innerHTML = link
+      ? '<a href="'+link+'" target="_blank" rel="noopener">View captured position in Google Maps &#8599;</a>'
+      : "";
+  }
+
+  function captureGps(){
+    if (!navigator.geolocation){
+      setGpsStatus("Geolocation isn't supported on this device");
+      return;
+    }
+    setGpsStatus("Locating\u2026");
+    navigator.geolocation.getCurrentPosition(function(pos){
+      var lat = pos.coords.latitude.toFixed(6);
+      var lng = pos.coords.longitude.toFixed(6);
+      $("#gps-link-field").value = "https://www.google.com/maps?q=" + lat + "," + lng;
+      updateGpsDisplay();
+      setGpsStatus("Captured " + lat + ", " + lng);
+      scheduleSave();
+      updateBadges();
+    }, function(){
+      setGpsStatus("Couldn't get location — check Location permission for Safari");
+    }, { enableHighAccuracy: true, timeout: 10000 });
+  }
+
+  /* ---------------- Badges / progress ---------------- */
+  function updateBadges(){
+    var totalFilled = 0;
+    $all("details.section").forEach(function(sec){
+      var summary = sec.querySelector("summary");
+      var badge = sec.querySelector(".badge");
+      var name = sec.getAttribute("data-section");
+      var filled = 0;
+
+      if (name === "stakeholders"){
+        filled = stakeholders.filter(function(s){ return Object.values(s).some(function(v){return v && v.trim && v.trim();}); }).length;
+        badge.textContent = filled ? (filled + (filled===1?" contact":" contacts")) : "0 noted";
+      } else if (name === "additional"){
+        filled = rfis.filter(function(r){ return r.text && r.text.trim(); }).length;
+        badge.textContent = filled ? (filled + (filled===1?" item":" items")) : "0 noted";
+      } else if (name === "technical"){
+        var rowCount = 0;
+        Object.keys(DYN_TABLES).forEach(function(k){
+          rowCount += DYN_TABLES[k].rows.filter(function(r){
+            return Object.values(r).some(function(v){ return v && v.trim && v.trim(); });
+          }).length;
+        });
+        var notesField = sec.querySelector('[data-field="tech.notes"]');
+        if (notesField && notesField.value.trim()) rowCount++;
+        filled = rowCount;
+        badge.textContent = filled ? (filled + (filled===1?" item":" items")) : "0 noted";
+      } else if (name === "drawings"){
+        filled = sketchStrokes.length ? 1 : 0;
+        badge.textContent = sketchStrokes.length ? "Sketch saved" : "0 noted";
+      } else if (name === "photos"){
+        filled = additionalPhotos.length;
+        badge.textContent = filled ? (filled + (filled===1?" photo":" photos")) : "0 noted";
+      } else {
+        var seen = {};
+        $all("[data-field]", sec).forEach(function(el){
+          var path = el.getAttribute("data-field");
+          if (el.type === "checkbox"){
+            if (seen[path]) return;
+            seen[path] = true;
+            if ($all('[data-field="'+path+'"]:checked', sec).length) filled++;
+          } else if (el.value && el.value.trim()){
+            filled++;
+          }
+        });
+        if (name === "introduction") filled += photos.length;
+        badge.textContent = filled ? (filled + " noted") : "0 noted";
+      }
+      summary.classList.toggle("complete", filled > 0);
+      totalFilled += filled;
+    });
+    $("#progress-line").textContent = totalFilled + (totalFilled===1?" field captured":" fields captured") +
+      " \u2022 " + stakeholders.length + " stakeholder" + (stakeholders.length===1?"":"s") +
+      " \u2022 " + rfis.length + " RFI" + (rfis.length===1?"":"s") +
+      " \u2022 " + photos.length + " photo" + (photos.length===1?"":"s");
+  }
+
+  /* ---------------- Save / Load ---------------- */
+  function setStatus(kind, text){
+    var el = $("#status");
+    el.className = "status " + kind;
+    $("#status-text").textContent = text;
+  }
+
+  function scheduleSave(){
+    setStatus("pending", "Unsaved changes");
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(save, 900);
+  }
+
+  function save(){
+    if (!window.indexedDB){
+      setStatus("idle", "This browser doesn't support local saving");
+      return;
+    }
+    var projectName = $("#m-project").value.trim();
+    if (!projectName){
+      setStatus("idle", "Add a project name to save");
+      return;
+    }
+    currentSlug = slugify(projectName);
+    var key = "sow-intake:" + currentSlug;
+    var data = serialize();
+    setStatus("pending", "Saving...");
+    localDB.set(key, JSON.stringify(data)).then(function(res){
+      if (res) setStatus("saved", "Saved to this device");
+      else setStatus("idle", "Save failed — try again");
+    }).catch(function(){
+      setStatus("idle", "Save failed — try again");
+    });
+  }
+
+  /* ---------------- Custom confirm / prompt modals ---------------- */
+  /* Custom in-page confirm/prompt modals, styled to match the rest of the app */
+  /* instead of relying on the browser's plain system dialogs. */
+  function showConfirm(message, onConfirm){
+    $("#confirm-message").textContent = message;
+    $("#confirm-overlay").classList.remove("hidden");
+    function cleanup(){
+      $("#confirm-ok").removeEventListener("click", okHandler);
+      $("#confirm-cancel").removeEventListener("click", cancelHandler);
+      $("#confirm-overlay").classList.add("hidden");
+    }
+    function okHandler(){ cleanup(); onConfirm(); }
+    function cancelHandler(){ cleanup(); }
+    $("#confirm-ok").addEventListener("click", okHandler);
+    $("#confirm-cancel").addEventListener("click", cancelHandler);
+  }
+
+  var pendingLabelPos = null;
+  function openLabelPrompt(pos){
+    pendingLabelPos = pos;
+    $("#label-input").value = "";
+    $("#label-overlay").classList.remove("hidden");
+    setTimeout(function(){ $("#label-input").focus(); }, 60);
+  }
+  function submitLabelPrompt(){
+    var text = $("#label-input").value.trim();
+    $("#label-overlay").classList.add("hidden");
+    if (text && pendingLabelPos){
+      sketchStrokes.push({ kind:"text", pos: pendingLabelPos, text: text, color: sketchPenColor, width: sketchPenWidth });
+      redrawSketch();
+      scheduleSave();
+      updateBadges();
+    }
+    pendingLabelPos = null;
+  }
+
+  function openLoadModal(){
+    $("#load-overlay").classList.remove("hidden");
+    var list = $("#visit-list");
+    if (!window.indexedDB){
+      list.innerHTML = '<div class="empty-state">This browser doesn\'t support local saving.</div>';
+      return;
+    }
+    list.innerHTML = '<div class="empty-state">Loading...</div>';
+    localDB.list("sow-intake:").then(function(res){
+      var keys = (res && res.keys) ? res.keys : [];
+      if (!keys.length){
+        list.innerHTML = '<div class="empty-state">No saved visits yet.</div>';
+        return;
+      }
+      return Promise.all(keys.map(function(k){
+        return localDB.get(k).then(function(r){
+          try { return { key: k, data: JSON.parse(r.value) }; }
+          catch(e){ return { key: k, data: null }; }
+        }).catch(function(){ return { key: k, data: null }; });
+      })).then(function(items){
+        items = items.filter(function(it){ return it.data; });
+        items.sort(function(a,b){
+          return (b.data._savedAt||"").localeCompare(a.data._savedAt||"");
+        });
+        if (!items.length){
+          list.innerHTML = '<div class="empty-state">No saved visits yet.</div>';
+          return;
+        }
+        list.innerHTML = items.map(function(it){
+          var name = it.data["meta.projectName"] || "(untitled)";
+          var client = it.data["meta.client"] || "";
+          var date = it.data["meta.visitDate"] || "";
+          return '<div class="visit-row">' +
+            '<div class="info"><b>'+escapeHtml(name)+'</b><span>'+escapeHtml([client,date].filter(Boolean).join(" \u2022 "))+'</span></div>' +
+            '<div class="actions">' +
+              '<button class="load-btn" data-load-key="'+it.key+'">Load</button>' +
+              '<button class="del-btn" data-del-key="'+it.key+'">Delete</button>' +
+            '</div></div>';
+        }).join("");
+      });
+    }).catch(function(){
+      list.innerHTML = '<div class="empty-state">Couldn\'t load saved visits — check connection.</div>';
+    });
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+
+  $("#visit-list").addEventListener("click", function(e){
+    var loadKey = e.target.getAttribute("data-load-key");
+    var delKey = e.target.getAttribute("data-del-key");
+    if (loadKey){
+      localDB.get(loadKey).then(function(r){
+        var data = JSON.parse(r.value);
+        applyData(data);
+        currentSlug = loadKey.replace("sow-intake:","");
+        setStatus("saved", "Loaded");
+        $("#load-overlay").classList.add("hidden");
+      }).catch(function(){ setStatus("idle","Couldn't load that visit"); });
+    }
+    if (delKey){
+      showConfirm("Delete this saved visit? This can't be undone.", function(){
+        localDB.delete(delKey).then(function(){ openLoadModal(); }).catch(function(){});
+      });
+    }
+  });
+
+  /* ---------------- Summary export ---------------- */
+  var SECTION_LABELS = [
+    ["background","1. Background"],
+    ["introduction","2. Introduction"],
+    ["requirements","3. Requirements & Deliverables"],
+    ["admin","4. Project Administration"],
+    ["qa","5. Quality Assurance"],
+    ["personnel","6. Personnel"],
+    ["accommodation","7. Accommodation"],
+    ["machinery","8. Machinery"],
+    ["materials","9. Materials"],
+    ["technical","10. Technical Design"]
+  ];
+
+  function buildSummary(){
+    var lines = [];
+    var name = $("#m-project").value.trim() || "(untitled project)";
+    lines.push("SITE VISIT SUMMARY — " + name);
+    lines.push("Project number: " + ($("#m-projnum").value.trim() || "-"));
+    lines.push("Client: " + ($("#m-client").value.trim() || "-"));
+    lines.push("Visit date: " + ($("#m-date").value || "-"));
+    lines.push("Visited by: " + ($("#m-by").value.trim() || "-"));
+    lines.push("");
+
+    SECTION_LABELS.forEach(function(pair){
+      var sec = $('details.section[data-section="'+pair[0]+'"]');
+      var rows = [];
+      $all("[data-field]", sec).forEach(function(el){
+        if (el.type === "checkbox") return;
+        if (el.value && el.value.trim()){
+          var label = el.closest(".field") ? el.closest(".field").querySelector("label") : null;
+          var labelText = el.getAttribute("data-label") || (label ? label.firstChild.textContent.trim() : el.getAttribute("data-field"));
+          rows.push("  " + labelText + ": " + el.value.trim());
+        }
+      });
+      var seen = {};
+      $all('input[type=checkbox][data-field]', sec).forEach(function(cb){
+        var path = cb.getAttribute("data-field");
+        if (seen[path]) return; seen[path]=true;
+        var checked = $all('[data-field="'+path+'"]:checked', sec).map(function(c){return c.value;});
+        if (checked.length) rows.push("  " + path.split(".").pop() + ": " + checked.join(", "));
+      });
+      if (pair[0] === "introduction" && photos.length){
+        rows.push("  Photos attached: " + photos.length + " (view in the saved visit)");
+      }
+      if (pair[0] === "technical"){
+        Object.keys(DYN_TABLES).forEach(function(k){
+          var t = DYN_TABLES[k];
+          var filledRows = t.rows.filter(function(r){ return Object.values(r).some(function(v){ return v && v.trim && v.trim(); }); });
+          filledRows.forEach(function(r){
+            var parts = t.columns.map(function(c){
+              if (c.type === "photo") return r[c.key] ? "Photo: attached" : null;
+              return r[c.key] ? (c.label + ": " + r[c.key]) : null;
+            }).filter(Boolean);
+            if (parts.length) rows.push("  [" + k + "] " + parts.join(" | "));
+          });
+        });
+      }
+      if (rows.length){
+        lines.push(pair[1]);
+        lines = lines.concat(rows);
+        lines.push("");
+      }
+    });
+
+    if (stakeholders.length){
+      lines.push("11. Stakeholders");
+      stakeholders.forEach(function(s){
+        var parts = [s.name, s.role, s.org, s.contact, s.relationship, s.remarks].filter(Boolean);
+        if (parts.length) lines.push("  - " + parts.join(" | "));
+      });
+      lines.push("");
+    }
+    if (rfis.length){
+      lines.push("12. Additional Information — RFIs");
+      rfis.forEach(function(r){
+        if (r.text && r.text.trim()) lines.push("  - [" + (r.resolved?"x":" ") + "] " + r.text.trim());
+      });
+      lines.push("");
+    }
+    if (sketchStrokes.length){
+      lines.push("13. Drawings");
+      lines.push("  Sketch attached (view in the saved visit)");
+      lines.push("");
+    }
+    if (additionalPhotos.length){
+      lines.push("14. Photos");
+      additionalPhotos.forEach(function(p, i){
+        lines.push("  - Photo " + (i+1) + (p.caption && p.caption.trim() ? ": " + p.caption.trim() : " (no comment)"));
+      });
+      lines.push("");
+    }
+    return lines.join("\n");
+  }
+
+  function copySummary(){
+    var text = buildSummary();
+    $("#summaryText").textContent = text;
+    $("#summary-overlay").classList.remove("hidden");
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).catch(function(){ fallbackCopy(text); });
+    } else {
+      fallbackCopy(text);
+    }
+  }
+  function fallbackCopy(text){
+    var ta = document.createElement("textarea");
+    ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    try { document.execCommand("copy"); } catch(e){}
+    document.body.removeChild(ta);
+  }
+
+  /* ---------------- Export PDF (print the filled-in intake form) ---------------- */
+  function exportVisitPDF(){
+    var name = $("#m-project").value.trim() || "Untitled Visit";
+    var client = $("#m-client").value.trim();
+    var date = $("#m-date").value;
+    var by = $("#m-by").value.trim();
+    $("#ph-project").textContent = name;
+    $("#ph-meta").textContent = [
+      client ? "Client: " + client : null,
+      date ? "Visit date: " + date : null,
+      by ? "Visited by: " + by : null
+    ].filter(Boolean).join("   \u2022   ");
+
+    var reopened = [];
+    $all("details.section").forEach(function(d){
+      if (!d.open){ d.open = true; reopened.push(d); }
+    });
+
+    document.body.classList.add("print-visit-mode");
+    window.print();
+
+    function cleanup(){
+      document.body.classList.remove("print-visit-mode");
+      reopened.forEach(function(d){ d.open = false; });
+      window.removeEventListener("afterprint", cleanup);
+    }
+    window.addEventListener("afterprint", cleanup);
+    setTimeout(cleanup, 2000); // fallback in case afterprint doesn't fire
+  }
+
+  /* ---------------- SOW Draft (auto-fill from captured visit data) ---------------- */
+  function fv(path){
+    var el = document.querySelector('[data-field="'+path+'"]');
+    return el ? el.value.trim() : "";
+  }
+  function fvChecked(path){
+    return $all('[data-field="'+path+'"]:checked').map(function(el){ return el.value; });
+  }
+  function sowPara(label, value){
+    return '<p><b>'+label+':</b> ' + (value ? escapeHtml(value) : '<span class="sow-empty">Not captured during site visit</span>') + '</p>';
+  }
+  function sowList(label, items){
+    if (!items.length) return '<p><b>'+label+':</b> <span class="sow-empty">None selected</span></p>';
+    return '<p><b>'+label+':</b></p><ul>' + items.map(function(i){ return '<li>'+escapeHtml(i)+'</li>'; }).join('') + '</ul>';
+  }
+  function sowDynTable(title, tableId){
+    var t = DYN_TABLES[tableId];
+    var rows = t.rows.filter(function(r){ return Object.values(r).some(function(v){ return v && v.trim && v.trim(); }); });
+    var head = '<h2>'+title+'</h2>';
+    if (!rows.length) return head + '<p class="sow-empty">No items captured</p>';
+    var thead = '<tr>' + t.columns.map(function(c){ return c.type==="photo" ? "" : "<th>"+c.label+"</th>"; }).join('') + '</tr>';
+    var tbody = rows.map(function(r){
+      return '<tr>' + t.columns.map(function(c){
+        if (c.type === "photo") return "";
+        return '<td>' + (r[c.key] ? escapeHtml(r[c.key]) : "") + '</td>';
+      }).join('') + '</tr>';
+    }).join('');
+    return head + '<table>' + thead + tbody + '</table>';
+  }
+
+  function buildSOWDraftHTML(){
+    var name = $("#m-project").value.trim() || "(Project Name Not Set)";
+    var client = $("#m-client").value.trim();
+    var projectNumber = $("#m-projnum").value.trim();
+    var date = $("#m-date").value;
+    var by = $("#m-by").value.trim();
+
+    var html = '';
+    html += '<h1>SCOPE OF WORK</h1>';
+    html += '<div class="sow-sub">' + escapeHtml(name) + '</div>';
+    html += '<p>' + [
+      client ? 'Client: ' + escapeHtml(client) : null,
+      projectNumber ? 'Project No: ' + escapeHtml(projectNumber) : null,
+      date ? 'Date: ' + escapeHtml(date) : null,
+      by ? 'Prepared by: ' + escapeHtml(by) : null
+    ].filter(Boolean).join(' &nbsp;&bull;&nbsp; ') + '</p>';
+    html += '<p style="font-size:10px;color:#9C9484;">Auto-drafted from site visit intake data \u2014 review and complete before issuing.</p>';
+
+    html += '<h2>1. Background</h2>';
+    html += sowPara("Client Background", fv("background.clientBackground"));
+    html += sowPara("Previous Job Overview", fv("background.previousJob"));
+    html += sowPara("Site Detail", fv("background.siteDetail"));
+
+    html += '<h2>2. Introduction</h2>';
+    var projectType = fv("intro.projectType");
+    if (projectType === "Other" && fv("intro.projectTypeOther")){
+      projectType = "Other \u2014 " + fv("intro.projectTypeOther");
+    }
+    html += sowPara("Project Type", projectType);
+    html += sowPara("Location", fv("intro.location"));
+    html += sowList("Site Type", fvChecked("intro.siteType"));
+    html += sowList("IT", fvChecked("intro.it"));
+    html += sowList("Roads", fvChecked("intro.roads"));
+    html += sowList("Machinery Access", fvChecked("intro.machineryAccess"));
+    html += sowPara("Site & Access Notes", fv("intro.siteAccessNotes"));
+
+    html += '<h2>3. Requirements &amp; Deliverables</h2>';
+    var inclusions = fvChecked("req.inclusions");
+    html += sowList("Project Inclusions", inclusions);
+    var scopeKeys = [
+      ["majorEarthworks","Major Earthworks"], ["minorEarthworks","Minor Earthworks"],
+      ["plumbing","Plumbing"], ["concrete","Concrete"], ["fencing","Fencing"],
+      ["products","Products"], ["shade","Shade"], ["other", fv("req.inclusionOtherLabel") || "Other"]
+    ];
+    scopeKeys.forEach(function(pair){
+      var inS = fv("req.inScope_" + pair[0]);
+      var outS = fv("req.outScope_" + pair[0]);
+      if (inS || outS){
+        html += '<p><b>' + escapeHtml(pair[1]) + ' \u2014 In Scope:</b> ' + (inS ? escapeHtml(inS) : '<span class="sow-empty">Not specified</span>') + '</p>';
+        html += '<p><b>' + escapeHtml(pair[1]) + ' \u2014 Out of Scope:</b> ' + (outS ? escapeHtml(outS) : '<span class="sow-empty">Not specified</span>') + '</p>';
+      }
+    });
+    html += sowPara("Required Completion Date", fv("req.completionDate"));
+    html += sowPara("Programming Notes", fv("req.timeframeNotes"));
+    html += sowList("Deliverables \u2014 Pre-Construction/Design", fvChecked("req.deliv_preConstruction"));
+    html += sowList("Deliverables \u2014 Procurement", fvChecked("req.deliv_procurement"));
+    html += sowList("Deliverables \u2014 During Construction", fvChecked("req.deliv_construction"));
+    html += sowList("Deliverables \u2014 Handover", fvChecked("req.deliv_handover"));
+    html += sowPara("Deliverables Notes", fv("req.deliverablesNotes"));
+
+    html += '<h2>4. Project Administration</h2>';
+    html += sowPara("Contract &amp; PPSR Requirements", fv("admin.contractPpsr"));
+    html += sowPara("Project Induction Requirements", fv("admin.induction"));
+    html += sowPara("Project Ticket Requirements", fv("admin.tickets"));
+    html += sowPara("Site Specific Requirements", fv("admin.siteSpecific"));
+    html += sowPara("SWMS, Dial Before You Dig, SDS Pack", fv("admin.swmsDbydSds"));
+
+    html += '<h2>5. Quality Assurance</h2>';
+    html += sowPara("Internal QA Requirements", fv("qa.internal"));
+    html += sowPara("Client QA Requirements", fv("qa.client"));
+    html += sowPara("External QA Requirements", fv("qa.external"));
+
+    html += '<h2>6. Personnel</h2>';
+    html += sowPara("Assigned Personnel", fv("personnel.assigned"));
+    html += sowList("Labour &amp; Tradesmen Requirements", fvChecked("personnel.trades"));
+    html += sowPara("Additional Details", fv("personnel.tradesmen"));
+
+    html += '<h2>7. Accommodation</h2>';
+    html += sowList("Accommodation Type", fvChecked("accom.type"));
+    html += sowPara("Details", fv("accom.details"));
+    html += sowPara("POC for Accommodation", fv("accom.poc"));
+    html += sowPara("Additional Information", fv("accom.additional"));
+
+    html += '<h2>8. Machinery</h2>';
+    var equip = fvChecked("mach.equip");
+    if (equip.length){
+      html += '<p><b>Equipment &amp; Machinery Required:</b></p><ul>' + equip.map(function(label){
+        var item = MACHINERY_ITEMS.find(function(p){ return p[1] === label; });
+        var detail = item ? fv("mach.detail_" + item[0]) : "";
+        return '<li>' + escapeHtml(label) + (detail ? " \u2014 " + escapeHtml(detail) : "") + '</li>';
+      }).join('') + '</ul>';
+    } else {
+      html += '<p><b>Equipment &amp; Machinery Required:</b> <span class="sow-empty">None selected</span></p>';
+    }
+    html += sowList("Fuel \u2014 Unleaded", fvChecked("mach.fuelUnleaded"));
+    html += sowList("Fuel \u2014 Diesel", fvChecked("mach.fuelDiesel"));
+    html += sowPara("Batch Plant Details", fv("mach.concrete"));
+    html += sowList("Site Equipment", fvChecked("mach.siteEquipment"));
+    html += sowPara("Machinery Remarks", fv("mach.remarks"));
+
+    html += '<h2>9. Materials</h2>';
+    html += sowPara("Procurement Details", fv("materials.boq"));
+
+    html += sowDynTable("10. Technical Design \u2014 Fencing (Fence Design)", "fencing");
+    html += sowDynTable("Technical Design \u2014 Product", "product");
+    html += sowDynTable("Technical Design \u2014 Plumbing", "plumbing");
+    html += sowPara("Design Notes / Reference", fv("tech.notes"));
+
+    html += '<h2>11. Stakeholders</h2>';
+    var validStakeholders = stakeholders.filter(function(s){ return Object.values(s).some(function(v){ return v && v.trim && v.trim(); }); });
+    if (validStakeholders.length){
+      html += '<table><tr><th>Organisation</th><th>Name</th><th>Role</th><th>Contact</th><th>Relationship</th><th>Remarks</th></tr>' +
+        validStakeholders.map(function(s){
+          return '<tr><td>'+escapeHtml(s.org||"")+'</td><td>'+escapeHtml(s.name||"")+'</td><td>'+escapeHtml(s.role||"")+
+            '</td><td>'+escapeHtml(s.contact||"")+'</td><td>'+escapeHtml(s.relationship||"")+'</td><td>'+escapeHtml(s.remarks||"")+'</td></tr>';
+        }).join('') + '</table>';
+    } else {
+      html += '<p class="sow-empty">No stakeholders captured</p>';
+    }
+
+    html += '<h2>12. Additional Information</h2>';
+    var validRfis = rfis.filter(function(r){ return r.text && r.text.trim(); });
+    if (validRfis.length){
+      html += '<ul>' + validRfis.map(function(r){ return '<li>' + (r.resolved ? '[Resolved] ' : '') + escapeHtml(r.text) + '</li>'; }).join('') + '</ul>';
+    } else {
+      html += '<p class="sow-empty">No open questions / RFIs captured</p>';
+    }
+
+    return html;
+  }
+
+  function generateAndPrintSOWDraft(){
+    $("#sow-draft-output").innerHTML = buildSOWDraftHTML();
+    document.body.classList.add("print-sow-mode");
+    window.print();
+    function cleanup(){
+      document.body.classList.remove("print-sow-mode");
+      window.removeEventListener("afterprint", cleanup);
+    }
+    window.addEventListener("afterprint", cleanup);
+    setTimeout(cleanup, 2000);
+  }
+
+  /* ---------------- Wire up ---------------- */
+  $("#btn-gps").addEventListener("click", captureGps);
+  $("#btn-add-photo").addEventListener("click", function(){ $("#photo-input").click(); });
+  $("#photo-input").addEventListener("change", function(e){
+    Array.prototype.slice.call(e.target.files).forEach(addPhotoFile);
+    e.target.value = "";
+  });
+  $("#dyn-photo-input").addEventListener("change", function(e){
+    if (e.target.files[0]) addDynRowPhotoFile(e.target.files[0]);
+    e.target.value = "";
+  });
+  $("#btn-add-extra-photo").addEventListener("click", function(){ $("#extra-photo-input").click(); });
+  $("#extra-photo-input").addEventListener("change", function(e){
+    Array.prototype.slice.call(e.target.files).forEach(addExtraPhotoFile);
+    e.target.value = "";
+  });
+  $("#btn-save").addEventListener("click", save);
+  $("#btn-load").addEventListener("click", openLoadModal);
+  $("#btn-summary").addEventListener("click", copySummary);
+  $("#btn-export-pdf").addEventListener("click", exportVisitPDF);
+  $("#btn-sow-draft").addEventListener("click", generateAndPrintSOWDraft);
+  $("#btn-new").addEventListener("click", function(){
+    showConfirm("Start a new visit? Unsaved changes will be lost.", resetForm);
+  });
+  $("#close-load").addEventListener("click", function(){ $("#load-overlay").classList.add("hidden"); });
+  $("#close-summary").addEventListener("click", function(){ $("#summary-overlay").classList.add("hidden"); });
+
+  $("#label-ok").addEventListener("click", submitLabelPrompt);
+  $("#label-cancel").addEventListener("click", function(){
+    $("#label-overlay").classList.add("hidden");
+    pendingLabelPos = null;
+  });
+  $("#label-input").addEventListener("keydown", function(e){
+    if (e.key === "Enter") submitLabelPrompt();
+  });
+
+  $all("[data-tool]").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      $all("[data-tool]").forEach(function(b){ b.classList.remove("active"); });
+      btn.classList.add("active");
+      sketchTool = btn.getAttribute("data-tool");
+    });
+  });
+  $all(".sw").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      $all(".sw").forEach(function(b){ b.classList.remove("active"); });
+      btn.classList.add("active");
+      sketchPenColor = btn.getAttribute("data-pen-color");
+    });
+  });
+  $all("[data-pen-width]").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      $all("[data-pen-width]").forEach(function(b){ b.classList.remove("active"); });
+      btn.classList.add("active");
+      sketchPenWidth = parseFloat(btn.getAttribute("data-pen-width"));
+    });
+  });
+  $("#btn-undo").addEventListener("click", function(){
+    if (sketchStrokes.length){
+      sketchStrokes.pop();
+      redrawSketch();
+      scheduleSave();
+      updateBadges();
+    }
+  });
+  $("#btn-clear").addEventListener("click", function(){
+    if (!sketchStrokes.length) return;
+    showConfirm("Clear the sketch? This can't be undone.", function(){
+      sketchStrokes = [];
+      redrawSketch();
+      scheduleSave();
+      updateBadges();
+    });
+  });
+  var drawingsDetails = document.querySelector('details.section[data-section="drawings"]');
+  if (drawingsDetails){
+    drawingsDetails.addEventListener("toggle", function(){
+      if (drawingsDetails.open){ sizeSketchCanvas(); redrawSketch(); }
+    });
+  }
+
+  initSketchPad();
+  renderStakeholders();
+  renderRfis();
+  renderPhotos();
+  renderExtraPhotos();
+  renderMachineryList();
+  renderAllDynTables();
+  updateInclusions();
+  updateBadges();
+})();
+</script>
+</body>
+</html>
