@@ -6,6 +6,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Site Visit Intake">
+<meta name="theme-color" content="#1F3864">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-180.png">
+<link rel="icon" href="./icon-192.png">
 <title>Site Visit Intake — Project Information Template</title>
 <style>
   :root{
@@ -2278,6 +2282,27 @@
   updateInclusions();
   updateBadges();
 })();
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("./sw.js").then(function (reg) {
+      // Check for an updated version in the background; if found and
+      // already installed once before, refresh so the new copy takes over.
+      reg.addEventListener("updatefound", function () {
+        var newWorker = reg.installing;
+        if (!newWorker) return;
+        newWorker.addEventListener("statechange", function () {
+          if (newWorker.state === "activated" && navigator.serviceWorker.controller) {
+            // A newer app shell has been cached and activated.
+            console.log("Site Visit Intake: updated offline copy cached.");
+          }
+        });
+      });
+    }).catch(function (err) {
+      console.warn("Service worker registration failed:", err);
+    });
+  });
+}
 </script>
 </body>
 </html>

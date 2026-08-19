@@ -1,0 +1,15 @@
+{
+  "name": "Site Visit Intake",
+  "short_name": "Site Intake",
+  "description": "Project Information Template — offline-capable site visit intake tool",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#F6F3EC",
+  "theme_color": "#1F3864",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
