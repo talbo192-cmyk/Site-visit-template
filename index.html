@@ -6,10 +6,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Site Visit Intake">
-<meta name="theme-color" content="#1F3864">
-<link rel="manifest" href="./manifest.json">
-<link rel="apple-touch-icon" href="./icon-180.png">
-<link rel="icon" href="./icon-192.png">
 <title>Site Visit Intake — Project Information Template</title>
 <style>
   :root{
@@ -135,6 +131,11 @@
   .tick-detail-row label.chk input{width:18px;height:18px;flex:0 0 auto;}
   .tick-detail-row input.detail-input{flex:2 1 200px;min-width:150px;font-size:14px;
     padding:7px 9px;border:1px solid #E4DFD1;border-radius:6px;background:#fff;}
+  .source-group{display:flex;gap:10px;flex:0 0 auto;padding:0 4px;border-left:1px solid #E4DFD1;
+    border-right:1px solid #E4DFD1;}
+  .source-group label{display:flex;align-items:center;gap:4px;font-size:.72rem;
+    color:var(--ink-soft);white-space:nowrap;}
+  .source-group input{width:15px;height:15px;flex:0 0 auto;}
   .fuel-row{margin-top:10px;}
   .fuel-row:first-child{margin-top:0;}
   .fuel-label{display:block;font-size:.78rem;font-weight:700;color:var(--ink);margin-bottom:5px;}
@@ -220,9 +221,21 @@
   /* ---------------- Print modes (Export PDF / SOW Draft) ---------------- */
   .print-header{display:none;}
   #sow-draft-output{display:none;}
+  /* Stand-in for textareas when printing: a textarea keeps its fixed box height
+     and clips the overflow, so on export each one is mirrored into a plain div
+     that grows to fit the text. Hidden on screen. */
+  .print-ta-mirror{display:none;}
 
   @media print{
     .overlay{display:none !important;}
+
+    @page{size:A4 portrait;margin:10mm 8mm;}
+
+    /* Print backgrounds/fills (ticked chips, table headers, photos) rather than
+       dropping them, which is the browser default. */
+    body.print-visit-mode,
+    body.print-visit-mode *{-webkit-print-color-adjust:exact !important;
+      print-color-adjust:exact !important;}
 
     /* --- Export PDF: print the filled-in intake form as-is --- */
     body.print-visit-mode .topbar{display:none !important;}
@@ -232,12 +245,29 @@
     body.print-visit-mode .print-header h1{font-family:Georgia,serif;color:#1F3864;
       font-size:20px;margin:0 0 4px;}
     body.print-visit-mode .print-header .ph-meta{font-size:11px;color:#665F52;}
-    body.print-visit-mode details.section{border:none;margin-bottom:10px;
-      page-break-inside:avoid;}
+
+    /* Use the full page width. The on-screen 860px column and its side padding
+       are narrower than A4 and were pushing the right-hand edge off the sheet. */
+    body.print-visit-mode{background:#fff;}
+    body.print-visit-mode main{max-width:none !important;width:100% !important;
+      margin:0 !important;padding:0 !important;}
+
+    /* Nothing may clip its own contents in print -- overflow:hidden/auto is what
+       was cutting off the right-hand columns and the edges of photo tiles. */
+    body.print-visit-mode details.section,
+    body.print-visit-mode .table-wrap,
+    body.print-visit-mode .photo-thumb,
+    body.print-visit-mode .extra-photo-card,
+    body.print-visit-mode .row-photo-wrap{overflow:visible !important;}
+
+    body.print-visit-mode details.section{margin-bottom:10px;
+      border:1px solid #C9C1AC;border-radius:0;page-break-inside:auto;}
     body.print-visit-mode details.section > summary{border-bottom:1px solid #1F3864;
-      padding-bottom:4px;}
+      padding:6px 8px;}
     body.print-visit-mode details.section .chevron{display:none;}
     body.print-visit-mode details.section > *:not(summary){display:block !important;}
+    body.print-visit-mode .sec-body{padding:6px 8px 10px;}
+
     body.print-visit-mode .add-row,
     body.print-visit-mode input[type="file"],
     body.print-visit-mode .row-del,
@@ -248,12 +278,80 @@
     body.print-visit-mode .sketch-toolbar,
     body.print-visit-mode #btn-add-extra-photo,
     body.print-visit-mode .extra-photo-footer{display:none !important;}
-    body.print-visit-mode textarea{border:none;padding:2px 0;}
-    body.print-visit-mode input,
-    body.print-visit-mode select{border:none;border-bottom:1px solid #D9D3C2;
-      background:transparent;}
+
+    /* Keep every field boxed so the printed form reads like a form, and let
+       text wrap instead of being clipped to a single line. */
+    body.print-visit-mode input[type=text],
+    body.print-visit-mode input[type=date],
+    body.print-visit-mode select,
+    body.print-visit-mode textarea{border:1px solid #C9C1AC !important;
+      background:#fff !important;padding:4px 6px !important;font-size:10px !important;
+      border-radius:0 !important;box-shadow:none !important;width:100% !important;}
+    body.print-visit-mode textarea{display:none !important;}
+    body.print-visit-mode .print-ta-mirror{display:block !important;
+      border:1px solid #C9C1AC;background:#fff;padding:4px 6px;font-size:10px;
+      line-height:1.35;min-height:13px;white-space:pre-wrap;word-wrap:break-word;
+      overflow-wrap:anywhere;font-family:inherit;color:#26241F;}
+    body.print-visit-mode .extra-photo-card .print-ta-mirror{border:none;
+      border-top:1px solid #C9C1AC;}
+
+    /* Tables: drop the 640px minimum so columns are squeezed onto the sheet
+       instead of running past the right edge. */
+    body.print-visit-mode .table-wrap{border:1px solid #C9C1AC;border-radius:0;}
+    body.print-visit-mode table.dyn{min-width:0 !important;width:100% !important;
+      table-layout:fixed;font-size:9px;}
+    body.print-visit-mode table.dyn th,
+    body.print-visit-mode table.dyn td{padding:3px 4px;border:1px solid #C9C1AC;
+      word-wrap:break-word;overflow-wrap:anywhere;}
+    body.print-visit-mode table.dyn input,
+    body.print-visit-mode table.dyn select{font-size:9px !important;padding:2px 3px !important;
+      border:none !important;}
+    body.print-visit-mode table.dyn tr{page-break-inside:avoid;}
+
+    /* Row thumbnails inside tables */
+    body.print-visit-mode .row-photo-wrap,
+    body.print-visit-mode .row-photo-thumb{width:38px !important;height:38px !important;}
+
+    /* Site photos: show the whole frame rather than a cropped 78px square. */
+    body.print-visit-mode .photo-gallery{display:grid !important;
+      grid-template-columns:repeat(4,1fr);gap:6px;}
+    body.print-visit-mode .photo-thumb{width:auto !important;height:auto !important;
+      border:1px solid #C9C1AC;border-radius:0;page-break-inside:avoid;}
+    body.print-visit-mode .photo-thumb img{width:100% !important;height:auto !important;
+      max-height:150px;object-fit:contain !important;background:#fff;}
+
+    /* Captioned photos: full image plus its full comment, never cropped. */
+    body.print-visit-mode .extra-photo-grid{display:grid !important;
+      grid-template-columns:repeat(2,1fr);gap:8px;}
+    body.print-visit-mode .extra-photo-card{border:1px solid #C9C1AC;border-radius:0;
+      page-break-inside:avoid;}
+    body.print-visit-mode .extra-photo-card img{width:100% !important;height:auto !important;
+      max-height:220px;object-fit:contain !important;background:#fff;}
+    body.print-visit-mode .extra-photo-card textarea{border:none !important;
+      border-top:1px solid #C9C1AC !important;}
+
+    /* Tick lists and chips: stop wide flex rows spilling past the margin. */
+    body.print-visit-mode .tick-detail-row{page-break-inside:avoid;padding:4px 6px;}
+    body.print-visit-mode .tick-detail-row label.chk{flex:1 1 140px;min-width:0;font-size:9.5px;}
+    body.print-visit-mode .tick-detail-row input.detail-input{flex:2 1 140px;min-width:0;}
+    body.print-visit-mode .source-group{flex:0 0 auto;gap:6px;}
+    body.print-visit-mode .source-group label{font-size:8.5px;}
+    body.print-visit-mode .check-grid{gap:4px;}
+    body.print-visit-mode .chip{font-size:9.5px;padding:3px 7px;page-break-inside:avoid;}
+    body.print-visit-mode .rfi-item{page-break-inside:avoid;}
+
+    /* Sketch pad */
+    body.print-visit-mode .sketch-canvas{max-width:100% !important;height:auto !important;
+      page-break-inside:avoid;border:1px solid #C9C1AC;}
+
+    body.print-visit-mode img,
+    body.print-visit-mode canvas{max-width:100% !important;}
 
     /* --- SOW Draft: hide everything except the generated draft --- */
+    body.print-sow-mode,
+    body.print-sow-mode *{-webkit-print-color-adjust:exact !important;
+      print-color-adjust:exact !important;}
+    body.print-sow-mode{background:#fff;margin:0;padding:0;}
     body.print-sow-mode > *{display:none !important;}
     body.print-sow-mode #sow-draft-output{display:block !important;
       font-family:Georgia,"Times New Roman",serif;color:#26241F;font-size:12px;
@@ -310,6 +408,9 @@
       <button class="btn" id="btn-summary">Copy Summary</button>
       <button class="btn" id="btn-export-pdf">Export PDF</button>
       <button class="btn" id="btn-sow-draft">SOW Draft</button>
+      <button class="btn" id="btn-export-file">Export File</button>
+      <button class="btn" id="btn-import-file">Import File</button>
+      <input type="file" id="import-file-input" accept=".json,application/json" style="display:none">
       <button class="btn" id="btn-new">New</button>
       <div class="status" id="status"><span class="dot"></span><span id="status-text">Not saved yet</span></div>
     </div>
@@ -378,7 +479,7 @@
       </div>
       <div class="field">
         <label>If Other, specify</label>
-        <input type="text" data-field="intro.projectTypeOther" placeholder="Describe project type">
+        <input type="text" data-field="intro.projectTypeOther" placeholder="Describe project type, e.g. pain points or remarks">
       </div>
       <div class="field">
         <label>2.02 Location Details</label>
@@ -458,6 +559,7 @@
           <label class="chip"><input type="checkbox" class="incl-toggle" data-key="fencing" data-field="req.inclusions" value="Fencing"> Fencing</label>
           <label class="chip"><input type="checkbox" class="incl-toggle" data-key="products" data-field="req.inclusions" value="Products"> Products</label>
           <label class="chip"><input type="checkbox" class="incl-toggle" data-key="shade" data-field="req.inclusions" value="Shade"> Shade</label>
+          <label class="chip"><input type="checkbox" class="incl-toggle" data-key="shed" data-field="req.inclusions" value="Shed"> Shed</label>
           <label class="chip"><input type="checkbox" class="incl-toggle" data-key="other" data-field="req.inclusions" value="Other"> Other</label>
         </div>
       </div>
@@ -522,6 +624,14 @@
             <textarea data-field="req.inScope_shade" data-label="Shade — In Scope" placeholder="Posts, fence line tie-in, structure size, payment arrangement..."></textarea></div>
           <div class="field"><label>Out of Scope</label>
             <textarea data-field="req.outScope_shade" data-label="Shade — Out of Scope" placeholder="What's excluded / client responsibility..."></textarea></div>
+        </div>
+
+        <div class="inclusion-block" data-inclusion="shed" hidden>
+          <div class="subhead">Shed — Scope</div>
+          <div class="field"><label>In Scope</label>
+            <textarea data-field="req.inScope_shed" data-label="Shed — In Scope" placeholder="Shed type, footprint, slab, cladding, electrical/plumbing tie-in..."></textarea></div>
+          <div class="field"><label>Out of Scope</label>
+            <textarea data-field="req.outScope_shed" data-label="Shed — Out of Scope" placeholder="What's excluded / client responsibility..."></textarea></div>
         </div>
 
         <div class="inclusion-block" data-inclusion="other" hidden>
@@ -793,7 +903,23 @@
         <button class="add-row" type="button" data-add-table="plumbing">+ Add Row</button>
       </div>
 
-      <div class="field"><label>10.04 Design Notes / Reference</label>
+      <div class="field">
+        <label>10.04 Concrete</label>
+        <div class="table-wrap">
+          <table class="dyn" id="dyn-table-concrete"></table>
+        </div>
+        <button class="add-row" type="button" data-add-table="concrete">+ Add Row</button>
+      </div>
+
+      <div class="field">
+        <label>10.05 Shed/Shade</label>
+        <div class="table-wrap">
+          <table class="dyn" id="dyn-table-shedShade"></table>
+        </div>
+        <button class="add-row" type="button" data-add-table="shedShade">+ Add Row</button>
+      </div>
+
+      <div class="field"><label>10.06 Design Notes / Reference</label>
         <textarea data-field="tech.notes" placeholder="Who's producing drawings, design references, engineering sign-off needed..."></textarea></div>
       <input type="file" id="dyn-photo-input" accept="image/*" style="display:none">
     </div>
@@ -1266,7 +1392,8 @@
     },
     product: {
       columns: [
-        { key:"type", label:"Type", type:"select", options:["Draft","Crush","Weighting Bay","WeighBox","MEQ Box","Curved Race","Straight Race","Dual Alley","Cattle Tub","Slide Gate","Gate","Loading Ramp"] },
+        { key:"type", label:"Type", type:"select", options:["Draft","Crush","Weighting Bay","WeighBox","MEQ Box","Curved Race","Straight Race","Dual Alley","Cattle Tub","Slide Gate","Gate","Loading Ramp","Weiner Race","Weiner Cradle","Weiner W/Box","EID Scanner"] },
+        { key:"supplier", label:"Supplier", type:"select", options:["Catagra","Morrissey","C.I.A","Proway","T.L"] },
         { key:"material", label:"Material", type:"text" },
         { key:"actuation", label:"Actuation", type:"select", options:["Pneumatic","Hydraulic","Manual","Electric"] },
         { key:"details", label:"Additional Details", type:"text" },
@@ -1280,6 +1407,28 @@
         { key:"supplier", label:"Supplier", type:"select", options:["Condon","Wild River","Civilmart","NSW"] },
         { key:"measurements", label:"Measurements", type:"text" },
         { key:"details", label:"Additional Details", type:"text" },
+        { key:"photo", label:"Photo", type:"photo" }
+      ],
+      rows: []
+    },
+    concrete: {
+      columns: [
+        { key:"type", label:"Type", type:"select", options:["Feed Bunk","Bunk Apron","Road Apron","Precast Bunk","Trough Apron","Shed Slab","Sediment Pit"] },
+        { key:"length", label:"Length", type:"text" },
+        { key:"width", label:"Width", type:"text" },
+        { key:"depth", label:"Depth", type:"text" },
+        { key:"reo", label:"Reo", type:"text" },
+        { key:"details", label:"Additional Remarks", type:"text" },
+        { key:"photo", label:"Photo", type:"photo" }
+      ],
+      rows: []
+    },
+    shedShade: {
+      columns: [
+        { key:"type", label:"Type", type:"select", options:["DDT Shade","Cable Shade","Skillion Shed","Gable Shed"] },
+        { key:"dimensions", label:"Dimensions", type:"text" },
+        { key:"materials", label:"Materials", type:"text" },
+        { key:"features", label:"Additional Features", type:"text" },
         { key:"photo", label:"Photo", type:"photo" }
       ],
       rows: []
@@ -1552,8 +1701,13 @@
     if (!el) return;
     el.innerHTML = MACHINERY_ITEMS.map(function(pair){
       var key = pair[0], label = pair[1];
+      var sourceField = "mach.source_" + key;
+      var sources = ["PFIS", "Hire", "Client"].map(function(s){
+        return '<label><input type="checkbox" data-field="'+sourceField+'" value="'+s+'"> '+s+'</label>';
+      }).join("");
       return '<div class="tick-detail-row">' +
         '<label class="chk"><input type="checkbox" data-field="mach.equip" value="'+label+'"> '+label+'</label>' +
+        '<div class="source-group">'+sources+'</div>' +
         '<input type="text" class="detail-input" data-field="mach.detail_'+key+'" data-label="'+label+' \u2014 Details" placeholder="Qty / dates / supplier...">' +
       '</div>';
     }).join("");
@@ -1992,10 +2146,12 @@
   function exportVisitPDF(){
     var name = $("#m-project").value.trim() || "Untitled Visit";
     var client = $("#m-client").value.trim();
+    var projectCode = $("#m-projnum").value.trim();
     var date = $("#m-date").value;
     var by = $("#m-by").value.trim();
     $("#ph-project").textContent = name;
     $("#ph-meta").textContent = [
+      projectCode ? "Project Code: " + projectCode : null,
       client ? "Client: " + client : null,
       date ? "Visit date: " + date : null,
       by ? "Visited by: " + by : null
@@ -2007,11 +2163,25 @@
     });
 
     document.body.classList.add("print-visit-mode");
+
+    // A textarea keeps its fixed box height when printed and clips whatever
+    // doesn't fit, so mirror each one into a div that grows to its full text.
+    var mirrors = [];
+    $all("textarea").forEach(function(t){
+      var m = document.createElement("div");
+      m.className = "print-ta-mirror";
+      m.textContent = t.value;
+      t.parentNode.insertBefore(m, t.nextSibling);
+      mirrors.push(m);
+    });
+
     window.print();
 
     function cleanup(){
       document.body.classList.remove("print-visit-mode");
       reopened.forEach(function(d){ d.open = false; });
+      mirrors.forEach(function(m){ if (m.parentNode) m.parentNode.removeChild(m); });
+      mirrors = [];
       window.removeEventListener("afterprint", cleanup);
     }
     window.addEventListener("afterprint", cleanup);
@@ -2090,7 +2260,7 @@
     var scopeKeys = [
       ["majorEarthworks","Major Earthworks"], ["minorEarthworks","Minor Earthworks"],
       ["plumbing","Plumbing"], ["concrete","Concrete"], ["fencing","Fencing"],
-      ["products","Products"], ["shade","Shade"], ["other", fv("req.inclusionOtherLabel") || "Other"]
+      ["products","Products"], ["shade","Shade"], ["shed","Shed"], ["other", fv("req.inclusionOtherLabel") || "Other"]
     ];
     scopeKeys.forEach(function(pair){
       var inS = fv("req.inScope_" + pair[0]);
@@ -2137,7 +2307,9 @@
       html += '<p><b>Equipment &amp; Machinery Required:</b></p><ul>' + equip.map(function(label){
         var item = MACHINERY_ITEMS.find(function(p){ return p[1] === label; });
         var detail = item ? fv("mach.detail_" + item[0]) : "";
-        return '<li>' + escapeHtml(label) + (detail ? " \u2014 " + escapeHtml(detail) : "") + '</li>';
+        var sources = item ? fvChecked("mach.source_" + item[0]) : [];
+        var tag = sources.length ? " [" + sources.join("/") + "]" : "";
+        return '<li>' + escapeHtml(label) + escapeHtml(tag) + (detail ? " \u2014 " + escapeHtml(detail) : "") + '</li>';
       }).join('') + '</ul>';
     } else {
       html += '<p><b>Equipment &amp; Machinery Required:</b> <span class="sow-empty">None selected</span></p>';
@@ -2154,6 +2326,8 @@
     html += sowDynTable("10. Technical Design \u2014 Fencing (Fence Design)", "fencing");
     html += sowDynTable("Technical Design \u2014 Product", "product");
     html += sowDynTable("Technical Design \u2014 Plumbing", "plumbing");
+    html += sowDynTable("Technical Design \u2014 Concrete", "concrete");
+    html += sowDynTable("Technical Design \u2014 Shed/Shade", "shedShade");
     html += sowPara("Design Notes / Reference", fv("tech.notes"));
 
     html += '<h2>11. Stakeholders</h2>';
@@ -2207,11 +2381,100 @@
     Array.prototype.slice.call(e.target.files).forEach(addExtraPhotoFile);
     e.target.value = "";
   });
+  /* ---------------- Transfer a visit between devices / people ----------------
+     Saved visits live in this browser's IndexedDB, which is private to one
+     browser on one device — there is no file on disk to share. These two
+     functions write the whole visit (photos, sketch and all) out to a .json
+     file and read one back in, so a visit can be AirDropped, emailed, or put
+     on OneDrive and opened by someone else.                                  */
+  function safeFilePart(s){
+    return String(s || "").trim().replace(/[^A-Za-z0-9._-]+/g, "-")
+      .replace(/^-+|-+$/g, "").slice(0, 60);
+  }
+
+  function exportVisitFile(){
+    var data;
+    try {
+      data = serialize();
+    } catch (err){
+      alert("Couldn't read the form to export. " + err.message);
+      return;
+    }
+    data._fileType = "site-visit-intake";
+    data._fileVersion = 1;
+
+    var project = safeFilePart($("#m-project").value) || "site-visit";
+    var date = $("#m-date").value || new Date().toISOString().slice(0, 10);
+    var filename = project + "_" + safeFilePart(date) + ".json";
+
+    var json;
+    try {
+      json = JSON.stringify(data);
+    } catch (err){
+      alert("Couldn't package this visit — it may be too large. " + err.message);
+      return;
+    }
+
+    var blob = new Blob([json], { type: "application/json" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+
+    var mb = (json.length / 1048576).toFixed(1);
+    setStatus("saved", "Exported " + filename + " (" + mb + " MB)");
+  }
+
+  function importVisitFile(file){
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev){
+      var data;
+      try {
+        data = JSON.parse(ev.target.result);
+      } catch (err){
+        alert("That file isn't a valid visit file (couldn't read it as JSON).");
+        return;
+      }
+      if (!data || typeof data !== "object" || Array.isArray(data)){
+        alert("That file isn't a valid visit file.");
+        return;
+      }
+      if (data._fileType && data._fileType !== "site-visit-intake"){
+        alert("That file was made by a different tool, so it can't be loaded here.");
+        return;
+      }
+      showConfirm(
+        "Load this visit? This replaces everything currently on the form, and anything unsaved will be lost.",
+        function(){
+          applyData(data);
+          currentSlug = "";   // treat as a new local record until they hit Save
+          setStatus("pending", "Imported — press Save to keep it on this device");
+        }
+      );
+    };
+    reader.onerror = function(){ alert("Couldn't read that file."); };
+    reader.readAsText(file);
+  }
+
   $("#btn-save").addEventListener("click", save);
   $("#btn-load").addEventListener("click", openLoadModal);
   $("#btn-summary").addEventListener("click", copySummary);
   $("#btn-export-pdf").addEventListener("click", exportVisitPDF);
   $("#btn-sow-draft").addEventListener("click", generateAndPrintSOWDraft);
+  $("#btn-export-file").addEventListener("click", exportVisitFile);
+  $("#btn-import-file").addEventListener("click", function(){
+    $("#import-file-input").click();
+  });
+  $("#import-file-input").addEventListener("change", function(e){
+    var f = e.target.files && e.target.files[0];
+    importVisitFile(f);
+    e.target.value = "";   // let the same file be picked again later
+  });
   $("#btn-new").addEventListener("click", function(){
     showConfirm("Start a new visit? Unsaved changes will be lost.", resetForm);
   });
@@ -2282,27 +2545,6 @@
   updateInclusions();
   updateBadges();
 })();
-
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", function () {
-    navigator.serviceWorker.register("./sw.js").then(function (reg) {
-      // Check for an updated version in the background; if found and
-      // already installed once before, refresh so the new copy takes over.
-      reg.addEventListener("updatefound", function () {
-        var newWorker = reg.installing;
-        if (!newWorker) return;
-        newWorker.addEventListener("statechange", function () {
-          if (newWorker.state === "activated" && navigator.serviceWorker.controller) {
-            // A newer app shell has been cached and activated.
-            console.log("Site Visit Intake: updated offline copy cached.");
-          }
-        });
-      });
-    }).catch(function (err) {
-      console.warn("Service worker registration failed:", err);
-    });
-  });
-}
 </script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 // Site Visit Intake — offline service worker
 // Bump CACHE_NAME any time index.html (or other cached files) change,
 // so returning users get the update instead of a stale cached copy.
-const CACHE_NAME = "site-visit-intake-v1";
+const CACHE_NAME = "site-visit-intake-v4";
 
 const APP_SHELL = [
   "./",
@@ -41,7 +41,6 @@ self.addEventListener("activate", function (event) {
 self.addEventListener("fetch", function (event) {
   var req = event.request;
 
-  // Only handle GET requests from this origin.
   if (req.method !== "GET" || !req.url.startsWith(self.location.origin)) {
     return;
   }
@@ -72,7 +71,6 @@ self.addEventListener("fetch", function (event) {
         caches.open(CACHE_NAME).then(function (cache) { cache.put(req, resClone); });
         return res;
       }).catch(function () {
-        // No cache, no network — nothing we can do for this asset.
         return cached;
       });
     })
