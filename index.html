@@ -175,11 +175,16 @@
     padding:7px 9px;font-size:.72rem;color:var(--navy);cursor:pointer;white-space:nowrap;}
 
   .table-wrap{overflow-x:auto;margin-top:10px;border:1px solid var(--line);border-radius:8px;}
-  table.dyn{border-collapse:collapse;width:100%;min-width:640px;}
+  table.dyn{border-collapse:collapse;width:100%;min-width:480px;table-layout:fixed;}
   table.dyn th{background:var(--paper);text-align:left;font-size:.72rem;text-transform:uppercase;
-    letter-spacing:.05em;color:var(--ink-soft);padding:8px 8px;border-bottom:1px solid var(--line);}
-  table.dyn td{padding:6px;border-bottom:1px solid var(--line);vertical-align:top;}
+    letter-spacing:.05em;color:var(--ink-soft);padding:8px 8px;border-bottom:1px solid var(--line);
+    overflow-wrap:break-word;}
+  table.dyn td{padding:6px;border-bottom:1px solid var(--line);vertical-align:top;overflow-wrap:break-word;}
   table.dyn input,table.dyn select{border:1px solid #E4DFD1;border-radius:5px;padding:7px 8px;font-size:14px;width:100%;background:#fff;}
+  table.dyn textarea.dyn-textarea{border:1px solid #E4DFD1;border-radius:5px;padding:7px 8px;font-size:14px;
+    width:100%;background:#fff;display:block;resize:none;overflow:hidden;min-height:34px;
+    font-family:inherit;line-height:1.35;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:anywhere;
+    box-sizing:border-box;}
   .row-del{background:none;border:none;color:#B5573A;font-size:1.1rem;cursor:pointer;padding:6px;}
   .add-row{margin-top:10px;background:var(--paper);border:1px dashed #C9C1AC;color:var(--navy);
     padding:9px 13px;border-radius:7px;font-size:.84rem;font-weight:600;cursor:pointer;}
@@ -294,6 +299,8 @@
       overflow-wrap:anywhere;font-family:inherit;color:#26241F;}
     body.print-visit-mode .extra-photo-card .print-ta-mirror{border:none;
       border-top:1px solid #C9C1AC;}
+    body.print-visit-mode table.dyn .print-ta-mirror{border:none !important;
+      padding:1px 2px;font-size:9px;min-height:0;}
 
     /* Tables: drop the 640px minimum so columns are squeezed onto the sheet
        instead of running past the right edge. */
@@ -409,6 +416,7 @@
       <button class="btn" id="btn-export-pdf">Export PDF</button>
       <button class="btn" id="btn-sow-draft">SOW Draft</button>
       <button class="btn" id="btn-export-file">Export File</button>
+      <button class="btn" id="btn-share-file">Share</button>
       <button class="btn" id="btn-import-file">Import File</button>
       <input type="file" id="import-file-input" accept=".json,application/json" style="display:none">
       <button class="btn" id="btn-new">New</button>
@@ -1355,6 +1363,7 @@
     var dynT = e.target.getAttribute("data-dyn-table");
     if (dynT){
       DYN_TABLES[dynT].rows[+e.target.getAttribute("data-dyn-row")][e.target.getAttribute("data-dyn-col")] = e.target.value;
+      if (e.target.classList.contains("dyn-textarea")) autoResizeDynTextarea(e.target);
       scheduleSave(); updateBadges();
     }
     var extraCapIdx = e.target.getAttribute("data-extra-caption");
@@ -1435,10 +1444,34 @@
     }
   };
 
+  var DYN_SMALL_TEXT_KEYS = ["length","width","depth","reo","heights","dimensions"];
+
+  function dynColWeight(c){
+    if (c.type === "select") return 14;
+    if (c.type === "photo") return 10;
+    return DYN_SMALL_TEXT_KEYS.indexOf(c.key) !== -1 ? 10 : 22;
+  }
+
+  function autoResizeDynTextarea(el){
+    el.style.height = "auto";
+    el.style.height = el.scrollHeight + "px";
+  }
+
   function renderDynTable(id){
     var t = DYN_TABLES[id];
     var container = document.getElementById("dyn-table-" + id);
     if (!t || !container) return;
+
+    // Fixed column widths (by weight) keep every column within the visible
+    // table width, so long text wraps down inside its cell instead of
+    // pushing the table wider or requiring horizontal scroll.
+    var deleteWeight = 6;
+    var weights = t.columns.map(dynColWeight);
+    var total = weights.reduce(function(a,b){ return a+b; }, 0) + deleteWeight;
+    var colgroup = "<colgroup>" + weights.map(function(w){
+      return '<col style="width:' + (w / total * 100).toFixed(2) + '%">';
+    }).join("") + '<col style="width:' + (deleteWeight / total * 100).toFixed(2) + '%"></colgroup>';
+
     var thead = "<thead><tr>" + t.columns.map(function(c){ return "<th>"+c.label+"</th>"; }).join("") + "<th></th></tr></thead>";
     var tbody;
     if (!t.rows.length){
@@ -1461,13 +1494,14 @@
             }
             return '<td><button type="button" class="row-photo-btn" data-dyn-photo-add="'+id+'" data-dyn-photo-row="'+i+'">+ Photo</button></td>';
           }
-          var val = row[c.key] ? String(row[c.key]).replace(/"/g,"&quot;") : "";
-          return '<td><input type="text" value="'+val+'" data-dyn-table="'+id+'" data-dyn-row="'+i+'" data-dyn-col="'+c.key+'"></td>';
+          var val = row[c.key] ? escapeHtml(String(row[c.key])) : "";
+          return '<td><textarea class="dyn-textarea" rows="1" data-dyn-table="'+id+'" data-dyn-row="'+i+'" data-dyn-col="'+c.key+'">'+val+'</textarea></td>';
         }).join("");
         return "<tr>" + cells + '<td><button class="row-del" type="button" data-dyn-del-table="'+id+'" data-dyn-del-row="'+i+'">&times;</button></td></tr>';
       }).join("") + "</tbody>";
     }
-    container.innerHTML = thead + tbody;
+    container.innerHTML = colgroup + thead + tbody;
+    container.querySelectorAll("textarea.dyn-textarea").forEach(autoResizeDynTextarea);
   }
 
   function renderAllDynTables(){
@@ -2383,22 +2417,24 @@
   });
   /* ---------------- Transfer a visit between devices / people ----------------
      Saved visits live in this browser's IndexedDB, which is private to one
-     browser on one device — there is no file on disk to share. These two
-     functions write the whole visit (photos, sketch and all) out to a .json
-     file and read one back in, so a visit can be AirDropped, emailed, or put
-     on OneDrive and opened by someone else.                                  */
+     browser on one device — there is no file on disk to share. These functions
+     write the whole visit (photos, sketch and all) out to a .json file and
+     read one back in, so a visit can be AirDropped, emailed, shared straight
+     to OneDrive, or put in a OneDrive folder and opened by someone else.    */
   function safeFilePart(s){
     return String(s || "").trim().replace(/[^A-Za-z0-9._-]+/g, "-")
       .replace(/^-+|-+$/g, "").slice(0, 60);
   }
 
-  function exportVisitFile(){
+  // Builds the JSON payload + filename for the current form. Returns null
+  // (having already alerted the user) if the form couldn't be packaged.
+  function buildVisitFileJSON(){
     var data;
     try {
       data = serialize();
     } catch (err){
       alert("Couldn't read the form to export. " + err.message);
-      return;
+      return null;
     }
     data._fileType = "site-visit-intake";
     data._fileVersion = 1;
@@ -2412,9 +2448,14 @@
       json = JSON.stringify(data);
     } catch (err){
       alert("Couldn't package this visit — it may be too large. " + err.message);
-      return;
+      return null;
     }
+    return { json: json, filename: filename };
+  }
 
+  // Plain download via a temporary <a download> link -- works on desktop
+  // browsers and in a normal (non-home-screen) mobile Safari tab.
+  function downloadVisitFile(json, filename){
     var blob = new Blob([json], { type: "application/json" });
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
@@ -2427,6 +2468,48 @@
 
     var mb = (json.length / 1048576).toFixed(1);
     setStatus("saved", "Exported " + filename + " (" + mb + " MB)");
+  }
+
+  function exportVisitFile(){
+    var built = buildVisitFileJSON();
+    if (!built) return;
+    downloadVisitFile(built.json, built.filename);
+  }
+
+  // Hands the file to the device's native share sheet (AirDrop, Mail,
+  // Messages, "Save to OneDrive", etc.) instead of relying on it landing in
+  // a Downloads folder -- the more reliable route on iPad/iPhone, especially
+  // when this app is launched from the Home Screen icon rather than a
+  // regular Safari tab. Falls back to a normal download wherever the Web
+  // Share API (or file sharing specifically) isn't available.
+  function shareVisitFile(){
+    var built = buildVisitFileJSON();
+    if (!built) return;
+
+    var file;
+    try {
+      file = new File([built.json], built.filename, { type: "application/json" });
+    } catch (err){
+      downloadVisitFile(built.json, built.filename);
+      return;
+    }
+
+    var shareData = {
+      files: [file],
+      title: "Site Visit Intake",
+      text: "Site visit data file" + (($("#m-project").value.trim()) ? " \u2014 " + $("#m-project").value.trim() : "")
+    };
+
+    if (navigator.canShare && navigator.canShare(shareData)){
+      navigator.share(shareData).then(function(){
+        setStatus("saved", "Shared " + built.filename);
+      }).catch(function(err){
+        if (err && err.name === "AbortError") return;   // user cancelled -- not an error
+        downloadVisitFile(built.json, built.filename);
+      });
+    } else {
+      downloadVisitFile(built.json, built.filename);
+    }
   }
 
   function importVisitFile(file){
@@ -2467,6 +2550,14 @@
   $("#btn-export-pdf").addEventListener("click", exportVisitPDF);
   $("#btn-sow-draft").addEventListener("click", generateAndPrintSOWDraft);
   $("#btn-export-file").addEventListener("click", exportVisitFile);
+  $("#btn-share-file").addEventListener("click", shareVisitFile);
+  // Web Share API support (and file-sharing support specifically) varies by
+  // browser -- hide the button rather than leave a dead click on platforms
+  // where it can't work at all, e.g. most desktop browsers other than
+  // recent Edge/Chrome on Windows.
+  if (!(navigator.share && navigator.canShare)){
+    $("#btn-share-file").style.display = "none";
+  }
   $("#btn-import-file").addEventListener("click", function(){
     $("#import-file-input").click();
   });

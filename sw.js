@@ -1,7 +1,7 @@
 // Site Visit Intake — offline service worker
 // Bump CACHE_NAME any time index.html (or other cached files) change,
 // so returning users get the update instead of a stale cached copy.
-const CACHE_NAME = "site-visit-intake-v4";
+const CACHE_NAME = "site-visit-intake-v5";
 
 const APP_SHELL = [
   "./",
